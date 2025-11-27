@@ -1,0 +1,13 @@
+ninja_dyndep_version = 1.0
+build CMakeFiles/PRSLab4.dir/main.cpp.o: dyndep
+
+build CMakeFiles/PRSLab4.dir/src/color_spaces/spaces.cpp.o: dyndep
+
+build CMakeFiles/PRSLab4.dir/src/common/misc.cpp.o: dyndep
+
+build CMakeFiles/PRSLab4.dir/src/slider/slider.cpp.o: dyndep
+
+build CMakeFiles/PRSLab4.dir/src/common/file/file_utils.cpp.o: dyndep
+
+build CMakeFiles/PRSLab4.dir/src/common/logger/logger.cpp.o: dyndep
+

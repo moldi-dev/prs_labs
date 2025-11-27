@@ -1,0 +1,55 @@
+{
+	"bmi-installation" : null,
+	"compiler-frontend-variant" : "GNU",
+	"compiler-id" : "GNU",
+	"compiler-simulate-id" : "",
+	"config" : "Debug",
+	"cxx-modules" : {},
+	"database-info" : null,
+	"dir-cur-bld" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/lab_6/cmake-build-debug",
+	"dir-cur-src" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/lab_6",
+	"dir-top-bld" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/lab_6/cmake-build-debug",
+	"dir-top-src" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/lab_6",
+	"exports" : [],
+	"forward-modules-from-target-dirs" : [],
+	"include-dirs" : 
+	[
+		"/usr/include/opencv4"
+	],
+	"language" : "CXX",
+	"linked-target-dirs" : [],
+	"module-dir" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/lab_6/cmake-build-debug/CMakeFiles/PRSLab6.dir",
+	"sources" : 
+	{
+		"CMakeFiles/PRSLab6.dir/main.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/lab_6/main.cpp"
+		},
+		"CMakeFiles/PRSLab6.dir/src/color_spaces/spaces.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/lab_6/src/color_spaces/spaces.cpp"
+		},
+		"CMakeFiles/PRSLab6.dir/src/common/file/file_utils.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/lab_6/src/common/file/file_utils.cpp"
+		},
+		"CMakeFiles/PRSLab6.dir/src/common/logger/logger.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/lab_6/src/common/logger/logger.cpp"
+		},
+		"CMakeFiles/PRSLab6.dir/src/common/misc.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/lab_6/src/common/misc.cpp"
+		},
+		"CMakeFiles/PRSLab6.dir/src/slider/slider.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/lab_6/src/slider/slider.cpp"
+		}
+	}
+}

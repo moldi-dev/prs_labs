@@ -1,0 +1,11 @@
+{
+"rules": [
+{
+"primary-output": "CMakeFiles/PRSLab3.dir/src/slider/slider.cpp.o",
+"requires": [
+]
+}
+],
+"version": 0,
+"revision": 0
+}

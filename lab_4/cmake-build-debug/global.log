@@ -1,0 +1,21 @@
+(42656 42656) from global with [debug] at [2025-10-03 18:1926.471]
+Opening file ./assets/images/saturn.bmp
+
+(42656 42656) from global with [debug] at [2025-10-03 18:1926.472]
+image loaded with 328 438
+
+(42656 42656) from global with [info] at [2025-10-03 18:1926.472]
+Press the arrow keys to cycle through execution slides
+
+(20869 20869) from global with [error] at [2025-10-04 10:5121.063]
+Failed to open points file: assets/points_LeastSquares/points0.txt
+
+(20869 20869) from global with [error] at [2025-10-04 10:5121.063]
+No points to display
+
+(21187 21187) from global with [info] at [2025-10-04 10:5223.132]
+Loaded 100 point(s) from assets/points_LeastSquares/points0.txt
+
+(21253 21253) from global with [info] at [2025-10-04 10:5240.441]
+Loaded 500 point(s) from assets/points_LeastSquares/points1.txt
+

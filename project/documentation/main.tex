@@ -1,0 +1,188 @@
+\documentclass{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+\usepackage{hyperref}
+
+\title[EAN-13 Scanning]{EAN-13 Barcode Detection and Recognition using Edge, Hough Transform, and Contour-based Decoding}
+\author{Moldovan Darius-Andrei}
+\institute[TUC-N]{Technical University of Cluj-Napoca}
+\date{November 5, 2025}
+
+\begin{document}
+
+% Title slide
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Outline
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+% Section 1
+\section{Introduction}
+
+\begin{frame}{What is an EAN-13 Barcode?}
+  \begin{itemize}
+    \item EAN-13 = European Article Number, 13 digits.
+    \item Encodes numeric information in sequences of black and white bars.
+    \item Commonly used on products in European and Romanian retail.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Project Goal}
+  \begin{block}{Objective}
+    Develop a robust method to detect and decode an EAN-13 barcode
+    directly from its bar pattern using classical image processing.
+  \end{block}
+  \begin{itemize}
+    \item Input: grayscale or color image containing one barcode.
+    \item Output: the recognized 13-digit numeric sequence.
+    \item Must be invariant to lighting, rotation, distance, and perspective.
+  \end{itemize}
+\end{frame}
+
+% Section 2
+\section{Method Overview}
+
+\begin{frame}{General Pipeline}
+  \begin{enumerate}
+    \item Image preprocessing.
+    \item Edge detection.
+    \item Orientation estimation using Hough Transform.
+    \item Barcode localization via contours.
+    \item Perspective correction and flattening.
+    \item Bar pattern decoding (EAN-13 digit extraction).
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{1. Image Preprocessing}
+  \begin{itemize}
+    \item Convert to grayscale and apply \textbf{CLAHE} to improve local contrast.
+    \item Apply smoothing to reduce random noise.
+    \begin{itemize}
+      \item prepares the image for stable edge detection under uneven illumination.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{2. Edge Detection}
+  \begin{itemize}
+    \item Use \textbf{Sobel} filters to find vertical edges.
+    \item Threshold to keep only strong vertical transitions.
+    \item Perform morphological closing to join fragmented edges.
+    \begin{itemize}
+      \item barcode zones show dense, repetitive vertical gradients.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{3. Orientation Estimation (Hough Transform)}
+  \begin{itemize}
+    \item Apply \textbf{Hough Line Transform} to detect dominant line angles.
+    \item Rotate the image to align the barcode horizontally.
+    \begin{itemize}
+      \item simplifies contour extraction and decoding.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{4. Barcode Region Extraction}
+  \begin{itemize}
+    \item Find connected regions using \textbf{cv::findContours}.
+    \item Filter candidates by aspect ratio (wide/short) and edge density.
+    \item Use \textbf{cv::minAreaRect} to compute bounding box.
+    \item Apply \textbf{warpPerspective} to correct skew or perspective distortion.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{5. Bar Pattern Decoding}
+  \begin{itemize}
+    \item Scan multiple horizontal lines across the barcode region.
+    \item Measure alternating black and white run lengths.
+    \item Normalize widths to the module size (smallest bar width).
+    \item Convert patterns to binary (0 = narrow, 1 = wide).
+    \item Split into left and right halves and decode using EAN-13 tables.
+    \item Validate with checksum:
+      \[
+      \text{Sum} = 3 \times \text{even digits} + \text{odd digits}
+      \]
+      \[
+      \text{Check digit} = (10 - (\text{Sum} \bmod 10)) \bmod 10
+      \]
+  \end{itemize}
+\end{frame}
+
+% Section 3
+\section{Improving Robustness}
+
+\begin{frame}{Handling Real-World Variations}
+  \begin{itemize}
+    \item \textbf{Lighting:} CLAHE and adaptive thresholding handle shadows/reflections.
+    \item \textbf{Rotation:} corrected using Hough-detected dominant angle.
+    \item \textbf{Distance:} scale invariance through adaptive module normalization.
+    \item \textbf{Perspective:} rectified using \textbf{minAreaRect} + \textbf{warpPerspective}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Validation and Error Checking}
+  \begin{itemize}
+    \item Validate decoded digits with the EAN-13 checksum.
+    \item Compare results from multiple scanlines; choose the most consistent.
+    \item Reattempt decoding with adjusted thresholds if checksum fails.
+  \end{itemize}
+\end{frame}
+
+% Section 4
+\section{Results and Discussion}
+
+\begin{frame}{Advantages \& Limitations}
+  \begin{block}{Advantages}
+    \begin{itemize}
+      \item Fully classical, no OCR or ML models required.
+      \item Robust to lighting, rotation, and perspective.
+      \item Real-time performance on standard hardware.
+    \end{itemize}
+  \end{block}
+  \begin{block}{Limitations}
+    \begin{itemize}
+      \item Sensitive to blur or low contrast.
+      \item Curved surfaces may distort bar widths.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+% Section 5
+\section{Conclusion}
+
+\begin{frame}{Conclusion}
+  \begin{itemize}
+    \item Edge, Hough, and contour analysis localize the barcode accurately.
+    \item Direct decoding of bar patterns retrieves the 13-digit code.
+    \item Meets robustness requirements with deterministic, interpretable steps.
+  \end{itemize}
+  \vspace{0.5cm}
+  \textbf{Future work:} improve decoding on curved or blurred barcodes.
+\end{frame}
+
+% Section 6
+\section{Bibliography}
+
+\begin{frame}{Bibliography and References}
+  \begin{itemize}
+    \item OpenCV Documentation - Edge Detection (Sobel, Scharr):  
+      \url{https://docs.opencv.org/4.x/d2/d2c/tutorial_sobel_derivatives.html}
+    \item OpenCV Hough Transform Reference:  
+      \url{https://docs.opencv.org/4.x/d3/de6/tutorial_js_houghlines.html}
+    \item OpenCV Contour Detection:  
+      \url{https://docs.opencv.org/4.x/d4/d73/tutorial_py_contours_begin.html}
+    \item ZXing-C++ (EAN-13 decoding logic reference):  
+      \url{https://github.com/zxing-cpp/zxing-cpp}
+    \item EAN-13 Barcode Specification (GS1):  
+      \url{https://www.gs1.org/standards/barcodes/ean-upc}
+  \end{itemize}
+\end{frame}
+
+\end{document}

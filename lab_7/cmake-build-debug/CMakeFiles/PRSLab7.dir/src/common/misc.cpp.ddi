@@ -1,0 +1,11 @@
+{
+"rules": [
+{
+"primary-output": "CMakeFiles/PRSLab7.dir/src/common/misc.cpp.o",
+"requires": [
+]
+}
+],
+"version": 0,
+"revision": 0
+}

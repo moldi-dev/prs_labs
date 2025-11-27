@@ -1,0 +1,15 @@
+ninja_dyndep_version = 1.0
+build CMakeFiles/PRSProject.dir/main.cpp.o: dyndep
+
+build CMakeFiles/PRSProject.dir/src/color_spaces/spaces.cpp.o: dyndep
+
+build CMakeFiles/PRSProject.dir/src/common/misc.cpp.o: dyndep
+
+build CMakeFiles/PRSProject.dir/src/slider/slider.cpp.o: dyndep
+
+build CMakeFiles/PRSProject.dir/src/common/file/file_utils.cpp.o: dyndep
+
+build CMakeFiles/PRSProject.dir/src/common/logger/logger.cpp.o: dyndep
+
+build CMakeFiles/PRSProject.dir/src/utils/BarcodeUtils.cpp.o: dyndep
+

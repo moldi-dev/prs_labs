@@ -1,0 +1,11 @@
+{
+"rules": [
+{
+"primary-output": "CMakeFiles/PRSLab2.dir/src/color_spaces/spaces.cpp.o",
+"requires": [
+]
+}
+],
+"version": 0,
+"revision": 0
+}
