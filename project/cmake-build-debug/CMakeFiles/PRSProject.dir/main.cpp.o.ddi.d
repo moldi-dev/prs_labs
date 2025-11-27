@@ -1,6 +1,6 @@
 CMakeFiles/PRSProject.dir/main.cpp.o.ddi: \
  /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/main.cpp \
- /usr/include/stdc-predef.h /usr/include/c++/15/fstream \
+ /usr/include/stdc-predef.h /usr/include/c++/15/iostream \
  /usr/include/c++/15/bits/requires_hosted.h \
  /usr/include/c++/15/x86_64-redhat-linux/bits/c++config.h \
  /usr/include/bits/wordsize.h \
@@ -10,9 +10,9 @@ CMakeFiles/PRSProject.dir/main.cpp.o.ddi: \
  /usr/include/bits/long-double.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-64.h \
  /usr/include/c++/15/x86_64-redhat-linux/bits/cpu_defines.h \
- /usr/include/c++/15/pstl/pstl_config.h /usr/include/c++/15/istream \
- /usr/include/c++/15/ios /usr/include/c++/15/iosfwd \
- /usr/include/c++/15/bits/stringfwd.h \
+ /usr/include/c++/15/pstl/pstl_config.h /usr/include/c++/15/ostream \
+ /usr/include/c++/15/bits/ostream.h /usr/include/c++/15/ios \
+ /usr/include/c++/15/iosfwd /usr/include/c++/15/bits/stringfwd.h \
  /usr/include/c++/15/bits/memoryfwd.h /usr/include/c++/15/bits/postypes.h \
  /usr/include/c++/15/cwchar /usr/include/wchar.h \
  /usr/include/bits/libc-header-start.h /usr/include/bits/floatn.h \
@@ -136,50 +136,19 @@ CMakeFiles/PRSProject.dir/main.cpp.o.ddi: \
  /usr/include/c++/15/bits/streambuf_iterator.h \
  /usr/include/c++/15/x86_64-redhat-linux/bits/ctype_inline.h \
  /usr/include/c++/15/bits/locale_facets.tcc \
- /usr/include/c++/15/bits/basic_ios.tcc /usr/include/c++/15/ostream \
- /usr/include/c++/15/bits/ostream.h /usr/include/c++/15/bits/ostream.tcc \
- /usr/include/c++/15/bits/istream.tcc /usr/include/c++/15/bits/codecvt.h \
- /usr/include/c++/15/x86_64-redhat-linux/bits/basic_file.h \
- /usr/include/c++/15/x86_64-redhat-linux/bits/c++io.h \
- /usr/include/c++/15/bits/fstream.tcc /usr/include/c++/15/limits \
- /usr/include/c++/15/random /usr/include/c++/15/cmath /usr/include/math.h \
- /usr/include/bits/math-vector.h /usr/include/bits/libm-simd-decl-stubs.h \
- /usr/include/bits/flt-eval-method.h /usr/include/bits/fp-logb.h \
- /usr/include/bits/fp-fast.h /usr/include/bits/mathcalls-macros.h \
- /usr/include/bits/mathcalls-helper-functions.h \
- /usr/include/bits/mathcalls.h /usr/include/bits/mathcalls-narrow.h \
- /usr/include/bits/iscanonical.h /usr/include/c++/15/bits/specfun.h \
- /usr/include/c++/15/tr1/gamma.tcc \
- /usr/include/c++/15/tr1/special_function_util.h \
- /usr/include/c++/15/tr1/bessel_function.tcc \
- /usr/include/c++/15/tr1/beta_function.tcc \
- /usr/include/c++/15/tr1/ell_integral.tcc \
- /usr/include/c++/15/tr1/exp_integral.tcc \
- /usr/include/c++/15/tr1/hypergeometric.tcc \
- /usr/include/c++/15/tr1/legendre_function.tcc \
- /usr/include/c++/15/tr1/modified_bessel_func.tcc \
- /usr/include/c++/15/tr1/poly_hermite.tcc \
- /usr/include/c++/15/tr1/poly_laguerre.tcc \
- /usr/include/c++/15/tr1/riemann_zeta.tcc /usr/include/c++/15/cstdint \
- /usr/lib/gcc/x86_64-redhat-linux/15/include/stdint.h \
- /usr/include/stdint.h /usr/include/bits/stdint-uintn.h \
- /usr/include/bits/stdint-least.h /usr/include/c++/15/bits/random.h \
- /usr/include/c++/15/vector /usr/include/c++/15/bits/stl_uninitialized.h \
- /usr/include/c++/15/bits/stl_vector.h \
- /usr/include/c++/15/bits/stl_bvector.h \
- /usr/include/c++/15/bits/vector.tcc \
- /usr/include/c++/15/bits/uniform_int_dist.h \
- /usr/include/c++/15/x86_64-redhat-linux/bits/opt_random.h \
- /usr/include/c++/15/bits/random.tcc /usr/include/c++/15/numeric \
- /usr/include/c++/15/bits/stl_numeric.h \
- /usr/include/c++/15/pstl/glue_numeric_defs.h \
- /usr/include/c++/15/pstl/execution_defs.h \
+ /usr/include/c++/15/bits/basic_ios.tcc \
+ /usr/include/c++/15/bits/ostream.tcc /usr/include/c++/15/istream \
+ /usr/include/c++/15/bits/istream.tcc \
  /usr/include/opencv4/opencv2/opencv.hpp \
  /usr/include/opencv4/opencv2/opencv_modules.hpp \
  /usr/include/opencv4/opencv2/core.hpp \
  /usr/include/opencv4/opencv2/core/cvdef.h \
- /usr/include/opencv4/opencv2/core/version.hpp \
+ /usr/include/opencv4/opencv2/core/version.hpp /usr/include/c++/15/limits \
  /usr/include/opencv4/opencv2/core/hal/interface.h \
+ /usr/include/c++/15/cstdint \
+ /usr/lib/gcc/x86_64-redhat-linux/15/include/stdint.h \
+ /usr/include/stdint.h /usr/include/bits/stdint-uintn.h \
+ /usr/include/bits/stdint-least.h \
  /usr/include/opencv4/opencv2/core/cv_cpu_dispatch.h \
  /usr/lib/gcc/x86_64-redhat-linux/15/include/emmintrin.h \
  /usr/lib/gcc/x86_64-redhat-linux/15/include/xmmintrin.h \
@@ -196,15 +165,36 @@ CMakeFiles/PRSProject.dir/main.cpp.o.ddi: \
  /usr/include/c++/15/bits/stl_algo.h \
  /usr/include/c++/15/bits/algorithmfwd.h \
  /usr/include/c++/15/bits/stl_heap.h \
+ /usr/include/c++/15/bits/uniform_int_dist.h \
  /usr/include/c++/15/bits/stl_tempbuf.h \
  /usr/include/c++/15/bits/ranges_algo.h \
  /usr/include/c++/15/bits/ranges_algobase.h \
  /usr/include/c++/15/pstl/glue_algorithm_defs.h \
+ /usr/include/c++/15/pstl/execution_defs.h \
  /usr/include/opencv4/opencv2/core/cvstd.hpp /usr/include/c++/15/cstring \
  /usr/include/string.h /usr/include/strings.h /usr/include/c++/15/utility \
- /usr/include/c++/15/bits/stl_relops.h \
+ /usr/include/c++/15/bits/stl_relops.h /usr/include/c++/15/cmath \
+ /usr/include/math.h /usr/include/bits/math-vector.h \
+ /usr/include/bits/libm-simd-decl-stubs.h \
+ /usr/include/bits/flt-eval-method.h /usr/include/bits/fp-logb.h \
+ /usr/include/bits/fp-fast.h /usr/include/bits/mathcalls-macros.h \
+ /usr/include/bits/mathcalls-helper-functions.h \
+ /usr/include/bits/mathcalls.h /usr/include/bits/mathcalls-narrow.h \
+ /usr/include/bits/iscanonical.h /usr/include/c++/15/bits/specfun.h \
+ /usr/include/c++/15/tr1/gamma.tcc \
+ /usr/include/c++/15/tr1/special_function_util.h \
+ /usr/include/c++/15/tr1/bessel_function.tcc \
+ /usr/include/c++/15/tr1/beta_function.tcc \
+ /usr/include/c++/15/tr1/ell_integral.tcc \
+ /usr/include/c++/15/tr1/exp_integral.tcc \
+ /usr/include/c++/15/tr1/hypergeometric.tcc \
+ /usr/include/c++/15/tr1/legendre_function.tcc \
+ /usr/include/c++/15/tr1/modified_bessel_func.tcc \
+ /usr/include/c++/15/tr1/poly_hermite.tcc \
+ /usr/include/c++/15/tr1/poly_laguerre.tcc \
+ /usr/include/c++/15/tr1/riemann_zeta.tcc \
  /usr/include/opencv4/opencv2/core/cvstd_wrapper.hpp \
- /usr/include/c++/15/memory \
+ /usr/include/c++/15/memory /usr/include/c++/15/bits/stl_uninitialized.h \
  /usr/include/c++/15/bits/stl_raw_storage_iter.h \
  /usr/include/c++/15/bits/align.h /usr/include/c++/15/bits/unique_ptr.h \
  /usr/include/c++/15/bits/shared_ptr.h \
@@ -236,6 +226,9 @@ CMakeFiles/PRSProject.dir/main.cpp.o.ddi: \
  /usr/include/opencv4/opencv2/core/matx.inl.hpp \
  /usr/include/opencv4/opencv2/core/types.hpp /usr/include/c++/15/cfloat \
  /usr/lib/gcc/x86_64-redhat-linux/15/include/float.h \
+ /usr/include/c++/15/vector /usr/include/c++/15/bits/stl_vector.h \
+ /usr/include/c++/15/bits/stl_bvector.h \
+ /usr/include/c++/15/bits/vector.tcc \
  /usr/include/opencv4/opencv2/core/mat.hpp \
  /usr/include/opencv4/opencv2/core/bufferpool.hpp \
  /usr/include/c++/15/array /usr/include/opencv4/opencv2/core/mat.inl.hpp \
@@ -266,7 +259,6 @@ CMakeFiles/PRSProject.dir/main.cpp.o.ddi: \
  /usr/include/opencv4/opencv2/flann/config.h \
  /usr/include/opencv4/opencv2/core/affine.hpp \
  /usr/include/opencv4/opencv2/core/utils/logger.hpp \
- /usr/include/c++/15/iostream \
  /usr/include/opencv4/opencv2/core/utils/logger.defines.hpp \
  /usr/include/opencv4/opencv2/core/utils/logtag.hpp \
  /usr/include/opencv4/opencv2/dnn.hpp \
@@ -277,7 +269,8 @@ CMakeFiles/PRSProject.dir/main.cpp.o.ddi: \
  /usr/include/c++/15/bits/locale_facets_nonio.h \
  /usr/include/c++/15/x86_64-redhat-linux/bits/time_members.h \
  /usr/include/c++/15/x86_64-redhat-linux/bits/messages_members.h \
- /usr/include/libintl.h /usr/include/c++/15/bits/locale_facets_nonio.tcc \
+ /usr/include/libintl.h /usr/include/c++/15/bits/codecvt.h \
+ /usr/include/c++/15/bits/locale_facets_nonio.tcc \
  /usr/include/c++/15/bits/locale_conv.h \
  /usr/include/c++/15/bits/quoted_string.h /usr/include/c++/15/format \
  /usr/include/c++/15/charconv /usr/include/c++/15/optional \
@@ -368,55 +361,4 @@ CMakeFiles/PRSProject.dir/main.cpp.o.ddi: \
  /usr/include/opencv4/opencv2/video.hpp \
  /usr/include/opencv4/opencv2/video/tracking.hpp \
  /usr/include/opencv4/opencv2/video/background_segm.hpp \
- /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/src/common/common.h \
- /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/src/common/paths.h \
- /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/src/common/./logger/logger.h \
- /usr/include/c++/15/source_location /usr/include/spdlog/spdlog.h \
- /usr/include/spdlog/common.h /usr/include/spdlog/details/null_mutex.h \
- /usr/include/c++/15/atomic /usr/include/spdlog/tweakme.h \
- /usr/include/spdlog/fmt/fmt.h /usr/include/fmt/base.h \
- /usr/include/fmt/format.h /usr/include/fmt/base.h \
- /usr/include/spdlog/common-inl.h /usr/include/c++/15/iterator \
- /usr/include/c++/15/bits/stream_iterator.h \
- /usr/include/spdlog/details/registry.h \
- /usr/include/spdlog/details/periodic_worker.h \
- /usr/include/c++/15/condition_variable /usr/include/c++/15/stop_token \
- /usr/include/c++/15/bits/std_thread.h /usr/include/c++/15/semaphore \
- /usr/include/c++/15/bits/semaphore_base.h \
- /usr/include/c++/15/bits/atomic_timed_wait.h \
- /usr/include/c++/15/bits/this_thread_sleep.h /usr/include/sys/time.h \
- /usr/include/semaphore.h /usr/include/bits/semaphore.h \
- /usr/include/c++/15/thread \
- /usr/include/spdlog/details/periodic_worker-inl.h \
- /usr/include/spdlog/details/registry-inl.h /usr/include/spdlog/logger.h \
- /usr/include/spdlog/details/backtracer.h \
- /usr/include/spdlog/details/circular_q.h /usr/include/c++/15/cassert \
- /usr/include/spdlog/details/log_msg_buffer.h \
- /usr/include/spdlog/details/log_msg.h \
- /usr/include/spdlog/details/log_msg-inl.h \
- /usr/include/spdlog/details/os.h /usr/include/spdlog/details/os-inl.h \
- /usr/include/sys/stat.h /usr/include/bits/stat.h \
- /usr/include/bits/struct_stat.h /usr/include/bits/statx.h \
- /usr/include/linux/stat.h /usr/include/bits/statx-generic.h \
- /usr/include/bits/types/struct_statx_timestamp.h \
- /usr/include/bits/types/struct_statx.h /usr/include/fcntl.h \
- /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
- /usr/include/bits/types/struct_iovec.h /usr/include/linux/falloc.h \
- /usr/include/spdlog/details/log_msg_buffer-inl.h \
- /usr/include/spdlog/details/backtracer-inl.h \
- /usr/include/spdlog/logger-inl.h /usr/include/spdlog/pattern_formatter.h \
- /usr/include/spdlog/formatter.h \
- /usr/include/spdlog/pattern_formatter-inl.h \
- /usr/include/spdlog/details/fmt_helper.h /usr/include/spdlog/mdc.h \
- /usr/include/spdlog/sinks/sink.h /usr/include/spdlog/sinks/sink-inl.h \
- /usr/include/spdlog/sinks/ansicolor_sink.h \
- /usr/include/spdlog/details/console_globals.h \
- /usr/include/spdlog/sinks/ansicolor_sink-inl.h \
- /usr/include/spdlog/details/synchronous_factory.h \
- /usr/include/spdlog/version.h /usr/include/spdlog/spdlog-inl.h \
- /usr/include/GL/glew.h /usr/include/GL/glu.h /usr/include/GL/gl.h \
- /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/src/common/./file/file_utils.h \
- /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/src/common/misc.h \
- /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/src/slider/slider.h \
- /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/src/common/logger/logger.h \
  /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/src/utils/BarcodeUtils.h

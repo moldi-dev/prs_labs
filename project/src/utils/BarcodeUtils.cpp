@@ -1,140 +1,225 @@
 #include "BarcodeUtils.h"
+#include <vector>
+#include <string>
 
-namespace BarcodeUtils {
-    void preprocess_image(const cv::Mat& input, cv::Mat& output) {
-        // 1. Convert to grayscale
-        cv::Mat gray;
+using namespace cv;
+using namespace std;
 
-        if (input.channels() == 3) {
-            cv::cvtColor(input, gray, cv::COLOR_BGR2GRAY);
-        }
+BarcodeDetector::BarcodeDetector(bool verbose) {
+    this->verbose = verbose;
+}
 
-        else {
-            gray = input.clone();
-        }
+Mat BarcodeDetector::scan(const Mat& input) {
+    if (verbose) {
+        cout << "[Step 0] Starting the barcode scanner pipeline..." << endl;
+        cout << "   > Input Resolution: " << input.cols << " x " << input.rows << endl;
 
-        // 2. Apply CLAHE (Contrast Limited Adaptive Histogram Equalization)
-        // Clip limit of 2.0 and tile grid size of 8 * 8 are standard starting points
-        cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE(2.0, cv::Size(8, 8));
-        cv::Mat claheImg;
-        clahe->apply(gray, claheImg);
-
-        // 3. Apply smoothing to reduce random noise
-        // Using a Gaussian Blur with a 5 * 5 kernel
-        cv::GaussianBlur(claheImg, output, cv::Size(5, 5), 0);
+        namedWindow("Original image", WINDOW_KEEPRATIO);
+        imshow("Original image", input);
     }
 
-    void detect_edges(const cv::Mat& input, cv::Mat& output) {
-        // 1. Use Sobel filters to find vertical edges
-        cv::Mat gradX;
-        // ddepth = CV_16S to avoid overflow, dx = 1, dy = 0 for vertical edges
-        cv::Sobel(input, gradX, CV_16S, 1, 0, 3);
+    // 1. Preprocess
+    Mat preprocessed;
+    pre_process_image(input, preprocessed);
 
-        cv::Mat absGradX;
-        cv::convertScaleAbs(gradX, absGradX);
+    // 2. Edges
+    Mat edges;
+    detect_edges(preprocessed, edges);
 
-        // 2. Threshold to keep only strong vertical transitions
-        // Using Otsu's binarization to automatically find the optimal threshold
-        cv::Mat thresh;
-        cv::threshold(absGradX, thresh, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
+    // 3. Localization
+    RotatedRect rect = get_barcode_region(edges);
 
-        // 3. Morphological Operations
-        // Use a flatter kernel (21 * 3) to connect bars horizontally
-        // without grabbing the numbers below
-        cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(21, 3));
-        cv::morphologyEx(thresh, output, cv::MORPH_CLOSE, kernel);
+    // 4. Extraction
+    Mat finalCrop = extract_barcode(input, rect);
 
-        // Perform standard Erosion (3 * 3) to remove noise and disconnect
-        // the barcode from the text labels if they are barely touching
-        // This helps isolate the barcode blob
-        cv::Mat erodeKernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
-        cv::erode(output, output, erodeKernel, cv::Point(-1, -1), 4);
-
-        // Dilate slightly to restore the volume of the main barcode block
-        // after the erosion
-        cv::Mat dilateKernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
-        cv::dilate(output, output, dilateKernel, cv::Point(-1, -1), 4);
+    if (finalCrop.empty()) {
+        cout << "Warning: No barcode detected" << endl;
     }
 
-    cv::RotatedRect get_barcode_region(const cv::Mat& edgeMask) {
-        // 1. Find the contours
-        std::vector<std::vector<cv::Point>> contours;
-        cv::findContours(edgeMask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    return finalCrop;
+}
 
-        cv::RotatedRect bestRect;
-        double maxArea = 0;
+void BarcodeDetector::pre_process_image(const Mat& input, Mat& output) {
+    Mat gray;
 
-        for (const auto& c : contours) {
-            // Use cv::minAreaRect to compute bounding box
-            cv::RotatedRect rect = cv::minAreaRect(c);
-
-            float width = rect.size.width;
-            float height = rect.size.height;
-
-            // Handle rotation (ensure width is the long side for calculation)
-            if (width < height) {
-                std::swap(width, height);
-            }
-
-            // Filter candidates by aspect ratio
-            // EAN-13 is typically wide => we expect width > height
-            double area = width * height;
-            double aspectRatio = width / height;
-
-            // Simple heuristic filters:
-            // - Area must be significant
-            // - Aspect ratio is usually > 2.0 for barcodes
-            if (area > maxArea && aspectRatio > 2.0) {
-                maxArea = area;
-                bestRect = rect;
-            }
-        }
-
-        return bestRect;
+    if (input.channels() == 3) {
+        cvtColor(input, gray, COLOR_BGR2GRAY);
     }
 
-    cv::Mat extract_barcode(const cv::Mat& original, const cv::RotatedRect& rect) {
-        if (rect.size.area() < 10) {
-            return cv::Mat(); // Return empty if no barcode found
-        }
+    else {
+        gray = input.clone();
+    }
 
-        // Apply warp Perspective to correct skew
+    // 1. Apply CLAHE
+    Ptr<CLAHE> clahe = createCLAHE(2.0, Size(8, 8));
+    Mat claheImg;
+    clahe->apply(gray, claheImg);
 
-        // 1. Determine target size (flattened)
-        // We ensure the output is always horizontal (width > height)
+    // 2. Apply smoothing
+    GaussianBlur(claheImg, output, Size(5, 5), 0);
+
+    if (verbose) {
+        cout << "[Step 1] Preprocessing complete" << endl;
+        namedWindow("Debug: Preprocessed", WINDOW_KEEPRATIO);
+        imshow("Debug: Preprocessed", output);
+    }
+}
+
+void BarcodeDetector::detect_edges(const Mat& input, Mat& output) {
+    // 1. Calculate Gradients in BOTH directions
+    // We need both because a rotated barcode has X and Y gradient components
+    Mat gradX, gradY;
+    Sobel(input, gradX, CV_16S, 1, 0, 3);
+    Sobel(input, gradY, CV_16S, 0, 1, 3);
+
+    Mat absGradX, absGradY;
+    convertScaleAbs(gradX, absGradX);
+    convertScaleAbs(gradY, absGradY);
+
+    // 2. Combine to get Gradient Magnitude
+    // This allows us to see edges regardless of rotation angle
+    Mat gradient;
+    addWeighted(absGradX, 0.5, absGradY, 0.5, 0, gradient);
+
+    // 3. Threshold
+    Mat thresh;
+    threshold(gradient, thresh, 0, 255, THRESH_BINARY | THRESH_OTSU);
+
+    // 4. Morphological Closing
+    // When a barcode is rotated ~30-45 degrees, the gap between bars becomes diagonal
+    // A taller kernel ensures we can reach the neighbor bar vertically to fuse them
+    Mat kernel = getStructuringElement(MORPH_RECT, Size(21, 11));
+    morphologyEx(thresh, output, MORPH_CLOSE, kernel);
+
+    // 5. Erosion (Remove Noise/Text)
+    Mat erodeKernel = getStructuringElement(MORPH_RECT, Size(3, 3));
+    erode(output, output, erodeKernel, Point(-1, -1), 4);
+
+    // 6. Dilation (Restore Volume)
+    Mat dilateKernel = getStructuringElement(MORPH_RECT, Size(3, 3));
+    dilate(output, output, dilateKernel, Point(-1, -1), 4);
+
+    if (verbose) {
+        cout << "[Step 2] Edge detection complete" << endl;
+        namedWindow("Debug: Edges", WINDOW_KEEPRATIO);
+        imshow("Debug: Edges", output);
+    }
+}
+
+RotatedRect BarcodeDetector::get_barcode_region(const Mat& edgeMask) {
+    vector<vector<Point>> contours;
+    findContours(edgeMask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+
+    RotatedRect bestRect;
+    double maxArea = 0;
+
+    for (const auto& c : contours) {
+        RotatedRect rect = minAreaRect(c);
+
         float width = rect.size.width;
         float height = rect.size.height;
 
-        // If the rect is vertical (angle near 90), swap width/height to make output horizontal
-        if (rect.angle < -45.0) {
-            std::swap(width, height);
+        // Ensure width is the long side
+        if (width < height) {
+            swap(width, height);
         }
 
-        // 2. Get the 4 corners of the rotated rect
-        cv::Point2f rectPoints[4];
-        rect.points(rectPoints);
+        double area = width * height;
+        double aspectRatio = width / height;
 
-        // 3. Sort points to correspond to top-left, top-right, bottom-right, bottom-left
-        // This is a simplified sort for standard rotations;
-        std::vector<cv::Point2f> srcPts(4);
-
-        // Destination points (straight rectangle)
-        std::vector<cv::Point2f> dstPts = {
-            {0, height - 1},
-            {0, 0},
-            {width - 1, 0},
-            {width - 1, height - 1}
-        };
-
-        for (int i = 0; i < 4; i++) {
-            srcPts[i] = rectPoints[i];
+        if (area > maxArea && aspectRatio > 1.6) {
+            maxArea = area;
+            bestRect = rect;
         }
-
-        // 4. Compute Perspective Matrix and Warp
-        cv::Mat M = cv::getPerspectiveTransform(srcPts, dstPts);
-        cv::Mat warped;
-        cv::warpPerspective(original, warped, M, cv::Size(width, height));
-
-        return warped;
     }
+
+    if (verbose) {
+        cout << "[Step 3] Region search complete. Found candidate data:" << endl;
+
+        if (maxArea > 0) {
+            cout << "   > Center: " << bestRect.center << endl;
+            cout << "   > Size: " << bestRect.size << endl;
+            cout << "   > Angle: " << bestRect.angle << endl;
+
+            // Draw the visualization on a temporary image
+            Mat debugImg;
+            cvtColor(edgeMask, debugImg, COLOR_GRAY2BGR);
+            Point2f v[4];
+            bestRect.points(v);
+
+            for (int i = 0; i < 4; i++) {
+                line(debugImg, v[i], v[(i + 1) % 4], Scalar(0, 0, 255), 3);
+            }
+
+            namedWindow("Debug: Bounding Box", WINDOW_KEEPRATIO);
+            imshow("Debug: Bounding Box", debugImg);
+        }
+
+        else {
+            cout << "   > No valid barcode region found" << endl;
+        }
+    }
+
+    return bestRect;
+}
+
+Mat BarcodeDetector::extract_barcode(const Mat& original, const RotatedRect& rect) {
+    if (rect.size.area() < 10) {
+        return Mat();
+    }
+
+    float angle = rect.angle;
+    Size2f size = rect.size;
+    Point2f center = rect.center;
+
+    // Orientation correction
+    if (size.width < size.height) {
+        angle += 90.0f;
+        swap(size.width, size.height);
+    }
+
+    if (verbose) {
+        cout << "[Step 4] Extracting the barcode" << endl;
+        cout << "   > Corrected Angle: " << angle << endl;
+        cout << "   > Target Size: " << size << endl;
+    }
+
+    Mat M = getRotationMatrix2D(center, angle, 1.0);
+    Mat rotated, cropped;
+
+    warpAffine(original, rotated, M, original.size(), INTER_CUBIC);
+    getRectSubPix(rotated, size, center, cropped);
+
+    // Content-based orientation check (Sobel gradients)
+    Mat gray, gradX, gradY;
+
+    if (cropped.channels() == 3) {
+        cvtColor(cropped, gray, COLOR_BGR2GRAY);
+    }
+
+    else {
+        gray = cropped.clone();
+    }
+
+    Sobel(gray, gradX, CV_16S, 1, 0);
+    Sobel(gray, gradY, CV_16S, 0, 1);
+
+    double sumX = sum(abs(gradX))[0];
+    double sumY = sum(abs(gradY))[0];
+
+    if (sumY > sumX) {
+        if (verbose) {
+            cout << "   > Detected horizontal bars. Rotating 90 degrees" << endl;
+        }
+
+        rotate(cropped, cropped, ROTATE_90_CLOCKWISE);
+    }
+
+    else {
+        if (verbose) {
+            cout << "   > Orientation confirmed correct" << endl;
+        }
+    }
+
+    return cropped;
 }

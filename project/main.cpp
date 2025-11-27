@@ -1,54 +1,62 @@
-#include <fstream>
-#include <limits>
-#include <random>
+#include <iostream>
+#include <string>
 #include <opencv2/opencv.hpp>
-#include "src/common/common.h"
-#include "src/slider/slider.h"
-#include "src/common/logger/logger.h"
 #include "src/utils/BarcodeUtils.h"
 
-using namespace cv;
 using namespace std;
-using namespace BarcodeUtils;
+using namespace cv;
 
-int main() {
-    cout << "Starting EAN-13 Barcode Detection Pipeline... \n";
+// Helper to parse CLI arguments manually
+string get_cmd_option(char** begin, char** end, const string & option) {
+    for (char** it = begin; it != end; ++it) {
+        string arg = *it;
 
-    // Step 0: Load an image containing a barcode
-    string imagePath = "./assets/sample_images/image_2.jpg";
-    Mat src = imread(imagePath);
+        if (arg.find(option) == 0) {
+            size_t pos = arg.find("=");
 
-    if (src.empty()) {
-        cerr << "Error: Could not open or find the image at " << imagePath << endl;
+            if (pos != string::npos) {
+                return arg.substr(pos + 1);
+            }
+        }
+    }
+
+    return "";
+}
+
+int main(int argc, char* argv[]) {
+    // 1. Parse Arguments
+    string imagePath = get_cmd_option(argv, argv + argc, "--image_path");
+    string verboseStr = get_cmd_option(argv, argv + argc, "--verbose");
+
+    // Simple validation
+    if (imagePath.empty()) {
+        cerr << "Usage: " << argv[0] << " --image_path=<path> [--verbose=true|false]" << endl;
         return -1;
     }
 
-    // Step 1: Preprocessing
-    Mat preprocessed;
-    preprocess_image(src, preprocessed);
+    bool verbose = (verboseStr == "true" || verboseStr == "1");
 
-    // Step 2: Edge Detection
-    Mat edges;
-    detect_edges(preprocessed, edges);
+    // 2. Load Image
+    Mat src = imread(imagePath);
+    if (src.empty()) {
+        cerr << "Error: Could not open image at " << imagePath << endl;
+        return -1;
+    }
 
-    // Step 3: Find the Region (Get coordinates from the blob)
-    RotatedRect barcodeRect = get_barcode_region(edges);
+    // 3. Instantiate Detector and Run
+    BarcodeDetector detector(verbose);
+    Mat finalResult = detector.scan(src);
 
-    // Step 4: Crop and Restore (Apply coordinates to the ORIGINAL image)
-    Mat finalBarcode = extract_barcode(src, barcodeRect);
+    // 4. Output Logic
+    if (finalResult.empty()) {
+        cerr << "Failed to detect barcode." << endl;
+    }
 
-    // Display results for debugging
-    namedWindow("Original image", WINDOW_KEEPRATIO);
-    imshow("Original image", src);
-
-    namedWindow("Preprocessed (Gray + CLAHE + Blur)", WINDOW_KEEPRATIO);
-    imshow("Preprocessed (Gray + CLAHE + Blur)", preprocessed);
-
-    namedWindow("Edges (Sobel + Morph)", WINDOW_KEEPRATIO);
-    imshow("Edges (Sobel + Morph)", edges);
-
-    namedWindow("Barcode image", WINDOW_KEEPRATIO);
-    imshow("Barcode image", finalBarcode);
+    else {
+        namedWindow("Result", WINDOW_KEEPRATIO);
+        imshow("Result", finalResult);
+        cout << "Barcode detected successfully." << endl;
+    }
 
     waitKey(0);
 
