@@ -516,3 +516,201 @@ events:
       Running the CXX compiler's linker: "/usr/bin/ld" "-v"
       GNU ld version 2.44-6.fc42
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckCCompilerFlag.cmake:56 (cmake_check_compiler_flag)"
+      - "cmake-build-debug/_deps/raylib-src/cmake/AddIfFlagCompiles.cmake:3 (CHECK_C_COMPILER_FLAG)"
+      - "cmake-build-debug/_deps/raylib-src/cmake/CompilerFlags.cmake:5 (add_if_flag_compiles)"
+      - "cmake-build-debug/_deps/raylib-src/CMakeLists.txt:27 (include)"
+    checks:
+      - "Performing Test COMPILER_HAS_THOSE_TOGGLES"
+    directories:
+      source: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-RBmrPh"
+      binary: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-RBmrPh"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/cmake"
+    buildResult:
+      variable: "COMPILER_HAS_THOSE_TOGGLES"
+      cached: true
+      stdout: |
+        Change Dir: '/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-RBmrPh'
+        
+        Run Build Command(s): /home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -v cmTC_80c6e
+        [1/2] /usr/bin/cc -DCOMPILER_HAS_THOSE_TOGGLES  -fdiagnostics-color=always   -Werror=pointer-arith -o CMakeFiles/cmTC_80c6e.dir/src.c.o -c /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-RBmrPh/src.c
+        [2/2] : && /usr/bin/cc   CMakeFiles/cmTC_80c6e.dir/src.c.o -o cmTC_80c6e   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindThreads.cmake:97 (check_c_source_compiles)"
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "cmake-build-debug/_deps/raylib-src/src/external/glfw/CMakeLists.txt:60 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-L223gf"
+      binary: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-L223gf"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "-fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith "
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/cmake;/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/src/external/glfw/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: '/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-L223gf'
+        
+        Run Build Command(s): /home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -v cmTC_f4f95
+        [1/2] /usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD  -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith   -std=gnu99 -fdiagnostics-color=always -o CMakeFiles/cmTC_f4f95.dir/src.c.o -c /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-L223gf/src.c
+        [2/2] : && /usr/bin/cc -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  CMakeFiles/cmTC_f4f95.dir/src.c.o -o cmTC_f4f95   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckLibraryExists.cmake:112 (try_compile)"
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindX11.cmake:701 (check_library_exists)"
+      - "cmake-build-debug/_deps/raylib-src/src/external/glfw/src/CMakeLists.txt:181 (find_package)"
+    checks:
+      - "Looking for XOpenDisplay in /usr/lib64/libX11.so;/usr/lib64/libXext.so"
+    directories:
+      source: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-8nE7AB"
+      binary: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-8nE7AB"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "-fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith "
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/cmake;/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/src/external/glfw/CMake/modules"
+    buildResult:
+      variable: "X11_LIB_X11_SOLO"
+      cached: true
+      stdout: |
+        Change Dir: '/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-8nE7AB'
+        
+        Run Build Command(s): /home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -v cmTC_a9a1b
+        [1/2] /usr/bin/cc   -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -DCHECK_FUNCTION_EXISTS=XOpenDisplay -std=gnu99 -fdiagnostics-color=always -o CMakeFiles/cmTC_a9a1b.dir/CheckFunctionExists.c.o -c /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-8nE7AB/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -DCHECK_FUNCTION_EXISTS=XOpenDisplay  CMakeFiles/cmTC_a9a1b.dir/CheckFunctionExists.c.o -o cmTC_a9a1b  /usr/lib64/libX11.so  /usr/lib64/libXext.so && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckFunctionExists.cmake:93 (try_compile)"
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindX11.cmake:716 (check_function_exists)"
+      - "cmake-build-debug/_deps/raylib-src/src/external/glfw/src/CMakeLists.txt:181 (find_package)"
+    checks:
+      - "Looking for gethostbyname"
+    directories:
+      source: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-89BqTS"
+      binary: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-89BqTS"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "-fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith "
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/cmake;/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/src/external/glfw/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_GETHOSTBYNAME"
+      cached: true
+      stdout: |
+        Change Dir: '/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-89BqTS'
+        
+        Run Build Command(s): /home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -v cmTC_373d0
+        [1/2] /usr/bin/cc   -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -DCHECK_FUNCTION_EXISTS=gethostbyname -std=gnu99 -fdiagnostics-color=always -o CMakeFiles/cmTC_373d0.dir/CheckFunctionExists.c.o -c /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-89BqTS/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -DCHECK_FUNCTION_EXISTS=gethostbyname  CMakeFiles/cmTC_373d0.dir/CheckFunctionExists.c.o -o cmTC_373d0   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckFunctionExists.cmake:93 (try_compile)"
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindX11.cmake:730 (check_function_exists)"
+      - "cmake-build-debug/_deps/raylib-src/src/external/glfw/src/CMakeLists.txt:181 (find_package)"
+    checks:
+      - "Looking for connect"
+    directories:
+      source: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-ipnaLU"
+      binary: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-ipnaLU"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "-fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith "
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/cmake;/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/src/external/glfw/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_CONNECT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-ipnaLU'
+        
+        Run Build Command(s): /home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -v cmTC_da287
+        [1/2] /usr/bin/cc   -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -DCHECK_FUNCTION_EXISTS=connect -std=gnu99 -fdiagnostics-color=always -o CMakeFiles/cmTC_da287.dir/CheckFunctionExists.c.o -c /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-ipnaLU/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -DCHECK_FUNCTION_EXISTS=connect  CMakeFiles/cmTC_da287.dir/CheckFunctionExists.c.o -o cmTC_da287   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckFunctionExists.cmake:93 (try_compile)"
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindX11.cmake:739 (check_function_exists)"
+      - "cmake-build-debug/_deps/raylib-src/src/external/glfw/src/CMakeLists.txt:181 (find_package)"
+    checks:
+      - "Looking for remove"
+    directories:
+      source: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-nzGGt6"
+      binary: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-nzGGt6"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "-fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith "
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/cmake;/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/src/external/glfw/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_REMOVE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-nzGGt6'
+        
+        Run Build Command(s): /home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -v cmTC_6171b
+        [1/2] /usr/bin/cc   -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -DCHECK_FUNCTION_EXISTS=remove -std=gnu99 -fdiagnostics-color=always -o CMakeFiles/cmTC_6171b.dir/CheckFunctionExists.c.o -c /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-nzGGt6/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -DCHECK_FUNCTION_EXISTS=remove  CMakeFiles/cmTC_6171b.dir/CheckFunctionExists.c.o -o cmTC_6171b   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckFunctionExists.cmake:93 (try_compile)"
+      - "/home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindX11.cmake:748 (check_function_exists)"
+      - "cmake-build-debug/_deps/raylib-src/src/external/glfw/src/CMakeLists.txt:181 (find_package)"
+    checks:
+      - "Looking for shmat"
+    directories:
+      source: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-0KL5jw"
+      binary: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-0KL5jw"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "-fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith "
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/cmake;/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/raylib-src/src/external/glfw/CMake/modules"
+    buildResult:
+      variable: "CMAKE_HAVE_SHMAT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-0KL5jw'
+        
+        Run Build Command(s): /home/moldi/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -v cmTC_2f5fe
+        [1/2] /usr/bin/cc   -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -DCHECK_FUNCTION_EXISTS=shmat -std=gnu99 -fdiagnostics-color=always -o CMakeFiles/cmTC_2f5fe.dir/CheckFunctionExists.c.o -c /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-0KL5jw/CheckFunctionExists.c
+        [2/2] : && /usr/bin/cc -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -DCHECK_FUNCTION_EXISTS=shmat  CMakeFiles/cmTC_2f5fe.dir/CheckFunctionExists.c.o -o cmTC_2f5fe   && :
+        
+      exitCode: 0
+...

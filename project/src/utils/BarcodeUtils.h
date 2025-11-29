@@ -10,7 +10,9 @@ public:
 
 private:
     bool verbose;
+    const std::string resultDir = "./assets/results/";
 
+    void save_debug(const std::string& name, const cv::Mat& img);
     void pre_process_image(const cv::Mat& input, cv::Mat& output);
     void detect_edges(const cv::Mat& input, cv::Mat& output);
     cv::RotatedRect get_barcode_region(const cv::Mat& edgeMask);

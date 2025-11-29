@@ -1,3 +1,5 @@
 /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/PRSProject.dir
+/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/package.dir
+/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/package_source.dir
 /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/edit_cache.dir
 /home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/rebuild_cache.dir

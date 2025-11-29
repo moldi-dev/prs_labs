@@ -1,12 +1,26 @@
 #include "BarcodeUtils.h"
 #include <vector>
 #include <string>
+#include <filesystem>
 
 using namespace cv;
 using namespace std;
+using namespace filesystem;
 
 BarcodeDetector::BarcodeDetector(bool verbose) {
     this->verbose = verbose;
+
+    if (!exists(resultDir)) {
+        create_directory(resultDir);
+    }
+}
+
+void BarcodeDetector::save_debug(const string& name, const Mat& img) {
+    if (verbose && !img.empty()) {
+        string path = resultDir + name + ".jpg";
+        imwrite(path, img);
+        cout << "[Disk] Saved " << name << endl;
+    }
 }
 
 Mat BarcodeDetector::scan(const Mat& input) {
@@ -14,8 +28,7 @@ Mat BarcodeDetector::scan(const Mat& input) {
         cout << "[Step 0] Starting the barcode scanner pipeline..." << endl;
         cout << "   > Input Resolution: " << input.cols << " x " << input.rows << endl;
 
-        namedWindow("Original image", WINDOW_KEEPRATIO);
-        imshow("Original image", input);
+        save_debug("0_original", input);
     }
 
     // 1. Preprocess
@@ -34,6 +47,10 @@ Mat BarcodeDetector::scan(const Mat& input) {
 
     if (finalCrop.empty()) {
         cout << "Warning: No barcode detected" << endl;
+    }
+
+    else {
+        save_debug("4_final_crop", finalCrop);
     }
 
     return finalCrop;
@@ -60,8 +77,7 @@ void BarcodeDetector::pre_process_image(const Mat& input, Mat& output) {
 
     if (verbose) {
         cout << "[Step 1] Preprocessing complete" << endl;
-        namedWindow("Debug: Preprocessed", WINDOW_KEEPRATIO);
-        imshow("Debug: Preprocessed", output);
+        save_debug("1_preprocessed", output);
     }
 }
 
@@ -101,8 +117,7 @@ void BarcodeDetector::detect_edges(const Mat& input, Mat& output) {
 
     if (verbose) {
         cout << "[Step 2] Edge detection complete" << endl;
-        namedWindow("Debug: Edges", WINDOW_KEEPRATIO);
-        imshow("Debug: Edges", output);
+        save_debug("2_edges", output);
     }
 }
 
@@ -151,8 +166,7 @@ RotatedRect BarcodeDetector::get_barcode_region(const Mat& edgeMask) {
                 line(debugImg, v[i], v[(i + 1) % 4], Scalar(0, 0, 255), 3);
             }
 
-            namedWindow("Debug: Bounding Box", WINDOW_KEEPRATIO);
-            imshow("Debug: Bounding Box", debugImg);
+            save_debug("3_bounding_box", debugImg);
         }
 
         else {
