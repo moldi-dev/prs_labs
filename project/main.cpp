@@ -1,390 +1,445 @@
-#define CVUI_IMPLEMENTATION
-#include "src/ui/cvui.h"
-
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <vector>
 #include <string>
 #include <sstream>
-#include <algorithm>
-#include <filesystem>
 #include <opencv2/opencv.hpp>
+#include <filesystem>
+
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 #include "src/utils/BarcodeUtils.h"
 
-using namespace cv;
-using namespace std;
-using namespace filesystem;
-using namespace cvui;
+namespace fs = std::filesystem;
 
-class ConsoleBuffer {
-private:
-    stringstream buffer;
-    streambuf* old;
-    vector<string> lines;
+// Logging system (redirect from the console to the application console logs)
+struct AppLog {
+    ImGuiTextBuffer Buf;
+    ImVector<int> LineOffsets;
+    bool AutoScroll;
+    bool ScrollToBottom;
 
-public:
-    ConsoleBuffer() {
-        old = cout.rdbuf(buffer.rdbuf());
+    AppLog() {
+        AutoScroll = true;
+        ScrollToBottom = false;
+        Clear();
     }
 
-    ~ConsoleBuffer() {
-        cout.rdbuf(old);
+    void Clear() {
+        Buf.clear();
+        LineOffsets.clear();
+        LineOffsets.push_back(0);
     }
 
-    void update() {
-        if (buffer.rdbuf()->in_avail() > 0) {
-            string text = buffer.str();
-            buffer.str("");
-            buffer.clear();
-
-            stringstream ss(text);
-            string line;
-
-            while (getline(ss, line)) {
-                if (!line.empty()) {
-                    lines.push_back(line);
-                }
+    void AddLog(const char *fmt, ...) IM_FMTARGS(2) {
+        int old_size = Buf.size();
+        va_list args;
+        va_start(args, fmt);
+        Buf.appendfv(fmt, args);
+        va_end(args);
+        for (int new_size = Buf.size(); old_size < new_size; old_size++) {
+            if (Buf[old_size] == '\n') {
+                LineOffsets.push_back(old_size + 1);
             }
+        }
+
+        if (AutoScroll) {
+            ScrollToBottom = true;
         }
     }
 
-    const vector<string>& getLines() const {
-        return lines;
-    }
+    void Draw(const char *title, bool *p_open = NULL) {
+        if (!ImGui::Begin(title, p_open)) {
+            ImGui::End();
+            return;
+        }
 
-    size_t size() const {
-        return lines.size();
-    }
+        if (ImGui::Button("Clear")) {
+            Clear();
+        }
 
-    void clear() {
-        lines.clear();
+        ImGui::SameLine();
+        ImGui::Checkbox("Auto-scroll", &AutoScroll);
+        ImGui::Separator();
+
+        // Reserve space for the scroll region
+        ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+        ImGui::TextUnformatted(Buf.begin());
+
+        if (ScrollToBottom) {
+            ImGui::SetScrollHereY(1.0f);
+            ScrollToBottom = false;
+        }
+
+        ImGui::EndChild();
+        ImGui::End();
     }
 };
 
-int main() {
-    string WINDOW_NAME = "EAN-13 Barcode Scanner";
-    init(WINDOW_NAME);
+// Global instance so streambuf can find it
+static AppLog g_AppLog;
 
-    Mat frame = Mat(800, 1200, CV_8UC3);
-
-    // Application State
-    bool verbose = true;
-    int currentTab = 0;
-    int logScrollPos = 0;
-
-    // UI Interaction States
-    bool isDraggingScrollbar = false;
-    string imageName = "image_1.jpg";
-    bool inputFocus = false;
-
-    Mat imgOriginal, imgPre, imgEdges, imgBox, imgResult;
-    bool hasRun = false;
-
-    ConsoleBuffer console;
-    cout << "System Ready." << endl;
-    cout << "Input Directory: ./assets/sample_images/" << endl;
-
-    while (true) {
-        frame = Scalar(49, 52, 57);
-        console.update();
-
-        window(frame, 20, 20, 220, 760, "Settings");
-
-        int viewX = 260; int viewY = 60;
-        int viewW = 900; int viewH = 500;
-        int consoleX = 260; int consoleY = 600;
-        int consoleW = 920; int consoleH = 180;
-
-        // Input Field
-        text(frame, 35, 60, "Image Filename:");
-        unsigned int borderColor = inputFocus ? 0xFF0000 : 0x666666;
-        rect(frame, 35, 80, 190, 30, 0x333333, borderColor);
-        text(frame, 40, 87, imageName);
-
-        // Manual Hit Test for Input Field
-        if (mouse(CLICK)) {
-            Point p = mouse();
-            Rect inputRect(35, 80, 190, 30);
-
-            if (inputRect.contains(p)) {
-                inputFocus = true;
-            }
-
-            else {
-                inputFocus = false;
-            }
+// Custom stream buffer to redirect std::cout to AppLog
+class ConsoleRedirector : public std::streambuf {
+public:
+    int overflow(int c) override {
+        if (c != EOF) {
+            char ch = (char) c;
+            g_AppLog.AddLog("%c", ch);
         }
 
-        // Load Button
-        if (button(frame, 35, 120, 190, 40, "Load Image")) {
-            string path = "./assets/sample_images/" + imageName;
-            cout << "\n[IO] Attempting to load: " << path << endl;
+        return c;
+    }
 
-            if (exists(path)) {
-                imgOriginal = imread(path);
+    std::streamsize xsputn(const char *s, std::streamsize n) override {
+        std::string str(s, n);
+        g_AppLog.AddLog("%s", str.c_str());
+        return n;
+    }
+};
+
+// GPU Texture
+struct GLTexture {
+    GLuint id = 0;
+    int width = 0;
+    int height = 0;
+
+    void Update(const cv::Mat &mat) {
+        if (mat.empty()) {
+            return;
+        }
+
+        if (id == 0) {
+            glGenTextures(1, &id);
+            glBindTexture(GL_TEXTURE_2D, id);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        }
+
+        glBindTexture(GL_TEXTURE_2D, id);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, (mat.step & 3) ? 1 : 4);
+
+        GLenum format = GL_BGR;
+
+        if (mat.channels() == 4) {
+            format = GL_BGRA;
+        }
+
+        else if (mat.channels() == 1) {
+            format = GL_LUMINANCE;
+        }
+
+        if (width != mat.cols || height != mat.rows) {
+            width = mat.cols;
+            height = mat.rows;
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, GL_UNSIGNED_BYTE, mat.data);
+        }
+
+        else {
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, format, GL_UNSIGNED_BYTE, mat.data);
+        }
+    }
+};
+
+
+int main(int, char **) {
+    // Setup Redirector
+    ConsoleRedirector redirector;
+    std::streambuf *oldCoutStream = std::cout.rdbuf(&redirector);
+    std::streambuf *oldCerrStream = std::cerr.rdbuf(&redirector);
+
+    // Setup Window
+    glfwSetErrorCallback([](int error, const char *description) {
+        fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+    });
+
+    if (!glfwInit()) {
+        return 1;
+    }
+
+    const char *glsl_version = "#version 130";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
+    // Initial window size (Desktop window, not ImGui window)
+    GLFWwindow *window = glfwCreateWindow(1600, 900, "Barcode Scanner", NULL, NULL);
+
+    if (window == NULL) {
+        return 1;
+    }
+
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void) io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+    ImGui::StyleColorsDark();
+    ImGuiStyle &style = ImGui::GetStyle();
+    style.WindowRounding = 5.0f;
+    style.FrameRounding = 4.0f;
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+    std::cout << "System Ready." << std::endl;
+    std::cout << "Input Directory: ./assets/sample_images/" << std::endl;
+
+    char inputBuf[128] = "image_1.jpg";
+    bool verbose = true;
+    int currentTab = 0;
+
+    cv::Mat imgOriginal, imgPre, imgEdges, imgBox, imgExtractedBarcode, imgDetectedBarcode;
+    GLTexture displayTexture;
+    bool hasRun = false;
+
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        float width = (float) display_w;
+        float height = (float) display_h;
+
+        // Controls panel
+        ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(300, 400), ImGuiCond_FirstUseEver);
+
+        ImGui::Begin("Controls");
+        ImGui::TextDisabled("Input Settings");
+        ImGui::InputText("Filename", inputBuf, IM_ARRAYSIZE(inputBuf));
+
+        if (ImGui::Button("Load Image", ImVec2(-1, 0))) {
+            std::string path = std::string("./assets/sample_images/") + inputBuf;
+            std::cout << "[IO] Loading: " << path << std::endl;
+
+            if (fs::exists(path)) {
+                imgOriginal = cv::imread(path);
 
                 if (!imgOriginal.empty()) {
-                    cout << "[IO] Success: Loaded " << imageName << " (" << imgOriginal.cols << "x" << imgOriginal.rows << ")" << endl;
+                    std::cout << "[IO] Loaded " << imgOriginal.cols << "x" << imgOriginal.rows << std::endl;
+                    displayTexture.Update(imgOriginal);
                     hasRun = false;
                     currentTab = 0;
                 }
 
                 else {
-                    cout << "[Error] File exists but OpenCV could not decode it." << endl;
+                    std::cerr << "[Error] Failed to decode image." << std::endl;
                 }
             }
 
             else {
-                cout << "[Error] File not found: " << path << endl;
+                std::cerr << "[Error] File not found." << std::endl;
             }
         }
 
-        checkbox(frame, 35, 180, "Verbose Mode", &verbose);
+        ImGui::Checkbox("Verbose Mode", &verbose);
+        ImGui::Separator();
 
-        // Run Pipeline
-        if (button(frame, 35, 220, 190, 40, "Run Pipeline")) {
+        // Run button
+        ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4) ImColor::HSV(0.6f, 0.6f, 0.6f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4) ImColor::HSV(0.6f, 0.7f, 0.7f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4) ImColor::HSV(0.6f, 0.8f, 0.8f));
+
+        if (ImGui::Button("RUN PIPELINE", ImVec2(-1, 20))) {
             if (imgOriginal.empty()) {
-                cout << "[Error] Please load an image first." << endl;
+                std::cerr << "[Error] No image loaded." << std::endl;
             }
 
             else {
-                cout << "\n--- Running Pipeline ---" << endl;
+                std::cout << "Starting the pipeline..." << std::endl;
+
                 BarcodeDetector detector(verbose);
-                imgResult = detector.scan(imgOriginal);
+                imgDetectedBarcode = detector.scan(imgOriginal);
                 hasRun = true;
 
                 if (verbose) {
-                    cout << "[GUI] Reloading debug layers from ./assets/results/ ..." << endl;
-                    imgPre = imread("./assets/results/1_preprocessed.jpg");
-                    imgEdges = imread("./assets/results/2_edges.jpg");
-                    imgBox = imread("./assets/results/3_bounding_box.jpg");
-                    imgResult = imread("./assets/results/4_final_crop.jpg");
+                    std::cout << "[GUI] Fetching debug layers..." << std::endl;
+                    imgPre = cv::imread("./assets/results/1_preprocessed.jpg");
+                    imgEdges = cv::imread("./assets/results/2_edges.jpg");
+                    imgBox = cv::imread("./assets/results/3_bounding_box.jpg");
+                    imgExtractedBarcode = cv::imread("./assets/results/4_final_crop.jpg");
+                    imgDetectedBarcode = cv::imread("./assets/results/5_decoded_result.jpg");
                 }
 
                 currentTab = verbose ? 4 : 0;
-                logScrollPos = 99999;
             }
         }
+
+        ImGui::PopStyleColor(3);
+
+        ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4) ImColor::HSV(0.6f, 0.6f, 0.6f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4) ImColor::HSV(0.6f, 0.7f, 0.7f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4) ImColor::HSV(0.6f, 0.8f, 0.8f));
 
         // OCR Button
-        if (button(frame, 35, 280, 190, 40, "Run OCR")) {
-             cout << "\n[OCR] Initializing Tesseract..." << endl;
-             cout << "[OCR] Error: OCR module not fully implemented in this build." << endl;
-             logScrollPos = 99999;
+        if (ImGui::Button("RUN OCR", ImVec2(-1, 20))) {
+            std::cout << "\n[OCR] Initializing Tesseract..." << std::endl;
+            std::cout << "[OCR] Error: OCR module not fully implemented in this build." << std::endl;
         }
 
-        // Clear Log
-        if (button(frame, 35, 720, 190, 30, "Clear Log")) {
-            console.clear();
-            logScrollPos = 0;
-        }
+        ImGui::PopStyleColor(3);
 
-        // Image Viewer Area
+        ImGui::End();
+
+        // Viewport
+        ImGui::SetNextWindowPos(ImVec2(320, 10), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(width - 330, height * 0.8f), ImGuiCond_FirstUseEver);
+
+        ImGui::Begin("Viewport");
+
+        // Tabs
         if (hasRun && verbose) {
-            int tabW = 100;
+            if (ImGui::BeginTabBar("ImageTabs")) {
+                if (ImGui::BeginTabItem("Original")) {
+                    currentTab = 0;
+                    ImGui::EndTabItem();
+                }
 
-            if (button(frame, viewX,20, tabW, 30, "Original")) {
-                currentTab = 0;
-            }
+                if (ImGui::BeginTabItem("Preprocessed")) {
+                    currentTab = 1;
+                    ImGui::EndTabItem();
+                }
 
-            if (button(frame, viewX + 110, 20, tabW, 30, "Preprocessed")) {
-                currentTab = 1;
-            }
+                if (ImGui::BeginTabItem("Edges")) {
+                    currentTab = 2;
+                    ImGui::EndTabItem();
+                }
 
-            if (button(frame, viewX + 220, 20, tabW, 30, "Edges")) {
-                currentTab = 2;
-            }
+                if (ImGui::BeginTabItem("Region")) {
+                    currentTab = 3;
+                    ImGui::EndTabItem();
+                }
 
-            if (button(frame, viewX + 330, 20, tabW, 30, "Region")) {
-                currentTab = 3;
-            }
+                if (ImGui::BeginTabItem("Extracted Barcode")) {
+                    currentTab = 4;
+                    ImGui::EndTabItem();
+                }
 
-            if (button(frame, viewX + 440, 20, tabW, 30, "Barcode")) {
-                currentTab = 4;
+                if (ImGui::BeginTabItem("Detected EAN-13 Barcode")) {
+                    currentTab = 5;
+                    ImGui::EndTabItem();
+                }
+
+                ImGui::EndTabBar();
             }
         }
 
-        Mat* displayPtr = nullptr;
-
-        if (hasRun || !imgOriginal.empty()) {
+        // Image selection
+        cv::Mat *matToShow = nullptr;
+        if (!imgOriginal.empty()) {
             if (!hasRun) {
-                displayPtr = &imgOriginal;
+                matToShow = &imgOriginal;
             }
 
             else if (!verbose) {
-                displayPtr = imgResult.empty() ? &imgOriginal : &imgResult;
+                matToShow = imgDetectedBarcode.empty() ? &imgOriginal : &imgDetectedBarcode;
             }
 
             else {
                 switch (currentTab) {
-                    case 0: displayPtr = &imgOriginal; break;
-                    case 1: displayPtr = &imgPre; break;
-                    case 2: displayPtr = &imgEdges; break;
-                    case 3: displayPtr = &imgBox; break;
-                    case 4: displayPtr = &imgResult; break;
+                    case 0:
+                        matToShow = &imgOriginal;
+                        break;
+                    case 1:
+                        matToShow = &imgPre;
+                        break;
+                    case 2:
+                        matToShow = &imgEdges;
+                        break;
+                    case 3:
+                        matToShow = &imgBox;
+                        break;
+                    case 4:
+                        matToShow = &imgExtractedBarcode;
+                        break;
+                    case 5:
+                        matToShow = &imgDetectedBarcode;
+                        break;
+                    default:
+                        break;
                 }
             }
         }
 
-        if (displayPtr && !displayPtr->empty()) {
-            float scaleX = (float)viewW / displayPtr->cols;
-            float scaleY = (float)viewH / displayPtr->rows;
-            float scale = min(scaleX, scaleY);
+        // Render Logic
+        if (matToShow && !matToShow->empty()) {
+            displayTexture.Update(*matToShow);
 
-            if (scale > 1.0f) {
-                scale = 1.0f;
-            }
+            ImVec2 avail = ImGui::GetContentRegionAvail();
+            avail.y -= 25;
 
-            Mat viz;
-            resize(*displayPtr, viz, Size(), scale, scale);
+            // Aspect ratio
+            float imgAspect = (float) matToShow->cols / (float) matToShow->rows;
+            float winAspect = avail.x / avail.y;
 
-            int offsetX = (viewW - viz.cols) / 2;
-            int offsetY = (viewH - viz.rows) / 2;
+            float drawW, drawH;
 
-            image(frame, viewX + offsetX, viewY + offsetY, viz);
-            string info = "Res: " + to_string(displayPtr->cols) + "x" + to_string(displayPtr->rows);
-            text(frame, viewX, viewY + viewH + 5, info, 0.5, 0xBBBBBB);
-        }
-
-        else {
-            rect(frame, viewX, viewY, viewW, viewH, 0x444444, 0x444444);
-            text(frame, viewX + viewW/2 - 50, viewY + viewH/2, "No Image Data");
-        }
-
-        // Scrollable Console
-        window(frame, consoleX, consoleY, consoleW, consoleH, "Console Log");
-
-        int lineHeight = 15;
-        int maxVisibleLines = (consoleH - 40) / lineHeight;
-        size_t totalLines = console.size();
-
-        int maxScrollIndex = 0;
-
-        if (totalLines > maxVisibleLines) {
-            maxScrollIndex = (int)totalLines - maxVisibleLines;
-        }
-
-        // Clamp existing scroll
-        if (logScrollPos > maxScrollIndex) {
-            logScrollPos = maxScrollIndex;
-        }
-
-        if (logScrollPos < 0) {
-            logScrollPos = 0;
-        }
-
-        if (totalLines > maxVisibleLines) {
-            // Define geometry
-            int barX = consoleX + consoleW - 20;
-            int barY = consoleY + 30;
-            int barW = 15;
-            int barH = consoleH - 40;
-            int thumbH = 30;
-
-            Point mouseP = mouse();
-            bool isMouseDown = mouse(DOWN);
-
-            // 1. Check if we just started dragging
-            // condition: Mouse is down AND inside the bar rect
-            Rect barRect(barX, barY, barW, barH);
-
-            if (isMouseDown) {
-                if (isDraggingScrollbar) {
-                    // CASE A: CONTINUING A DRAG
-                    // We don't care if mouse is inside rect, just calculate pos
-                    int relativeY = mouseP.y - barY - (thumbH/2);
-                    float ratio = (float)relativeY / (barH - thumbH);
-
-                    if (ratio < 0) {
-                        ratio = 0;
-                    }
-
-                    if (ratio > 1) {
-                        ratio = 1;
-                    }
-
-                    logScrollPos = (int)(ratio * maxScrollIndex);
-
-                }
-
-                else if (barRect.contains(mouseP)) {
-                    // CASE B: STARTING A DRAG
-                    isDraggingScrollbar = true;
-                    // Initial jump to mouse pos
-                    int relativeY = mouseP.y - barY - (thumbH/2);
-                    float ratio = (float)relativeY / (barH - thumbH);
-
-                    if (ratio < 0) {
-                        ratio = 0;
-                    }
-
-                    if (ratio > 1) {
-                        ratio = 1;
-                    }
-
-                    logScrollPos = (int)(ratio * maxScrollIndex);
-                }
+            if (imgAspect > winAspect) {
+                // Fit width
+                drawW = avail.x;
+                drawH = drawW / imgAspect;
             }
 
             else {
-                // Mouse released
-                isDraggingScrollbar = false;
+                // Fit height
+                drawH = avail.y;
+                drawW = drawH * imgAspect;
             }
 
-            // Draw Track
-            rect(frame, barX, barY, barW, barH, 0x333333, 0x555555);
+            float cursorX = (avail.x - drawW) * 0.5f;
+            float cursorY = (avail.y - drawH) * 0.5f;
+            ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + cursorX, ImGui::GetCursorPosY() + cursorY));
 
-            // Draw Thumb
-            // Recalculate thumbY based on potentially updated logScrollPos
-            float currentRatio = (float)logScrollPos / maxScrollIndex;
-            int thumbY = barY + (int)(currentRatio * (barH - thumbH));
+            ImGui::Image(displayTexture.id, ImVec2(drawW, drawH));
 
-            unsigned int thumbColor = isDraggingScrollbar ? 0xAAAAAA : 0x888888;
-            rect(frame, barX, thumbY, barW, thumbH, thumbColor, thumbColor);
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+            ImGui::Separator();
+            ImGui::Text("Resolution: %dx%d  |  Channels: %d", matToShow->cols, matToShow->rows, matToShow->channels());
         }
 
-        int textY = consoleY + 30;
-        int drawnCount = 0;
-        const vector<string>& allLines = console.getLines();
-
-        for (size_t i = logScrollPos; i < totalLines && drawnCount < maxVisibleLines; i++) {
-            text(frame, consoleX + 10, textY, allLines[i], 0.4, 0x00ff00);
-            textY += lineHeight;
-            drawnCount++;
+        else {
+            ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x * 0.45f,
+                                       ImGui::GetContentRegionAvail().y * 0.5f));
+            ImGui::TextDisabled("No Image Loaded");
         }
 
-        update();
-        cv::imshow(WINDOW_NAME, frame);
+        ImGui::End();
 
-        int key = waitKey(20);
+        // Console log (bottom panel)
+        ImGui::SetNextWindowPos(ImVec2(10, height * 0.68f), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(width - 20, height * 0.30f), ImGuiCond_FirstUseEver);
 
-        if (key == 27) {
-            break;
-        }
+        g_AppLog.Draw("Console Log");
 
-        if (inputFocus && key != -1) {
-            if (key == 8 || key == 127) {
-                if (!imageName.empty()) {
-                    imageName.pop_back();
-                }
-            }
-
-            else if (key == 13) {
-                inputFocus = false;
-            }
-
-            else if (  (key >= 'a' && key <= 'z') ||
-                       (key >= 'A' && key <= 'Z') ||
-                       (key >= '0' && key <= '9') ||
-                       key == '.' ||
-                       key == '_' ||
-                       key == '-'
-            ) {
-                if (imageName.length() < 30) {
-                    imageName += (char)key;
-                }
-            }
-        }
+        // Rendering
+        ImGui::Render();
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        glfwSwapBuffers(window);
     }
+
+    // Cleanup & Restore cout
+    std::cout.rdbuf(oldCoutStream);
+    std::cerr.rdbuf(oldCerrStream);
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    glfwDestroyWindow(window);
+    glfwTerminate();
 
     return 0;
 }

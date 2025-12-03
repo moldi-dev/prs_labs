@@ -3,11 +3,18 @@
 \usetheme{Madrid}
 \usecolortheme{seahorse}
 \usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
 
-\title[EAN-13 Scanning]{EAN-13 Barcode Detection and Recognition using Edge, Hough Transform, and Contour-based Decoding}
+% Custom command for emphasizing key terms
+\newcommand{\keyword}[1]{\textbf{\color{blue}#1}}
+
+\title[EAN-13 Detection \& Decoding]{EAN-13 Barcode Recognition: \\ A Comparative Approach}
+\subtitle{Geometric Decoding vs. Optical Character Recognition (OCR)}
 \author{Moldovan Darius-Andrei}
 \institute[TUC-N]{Technical University of Cluj-Napoca}
-\date{November 5, 2025}
+\date{\today}
 
 \begin{document}
 
@@ -25,164 +32,176 @@
 \section{Introduction}
 
 \begin{frame}{What is an EAN-13 Barcode?}
-  \begin{itemize}
-    \item EAN-13 = European Article Number, 13 digits.
-    \item Encodes numeric information in sequences of black and white bars.
-    \item Commonly used on products in European and Romanian retail.
-  \end{itemize}
+  \begin{columns}
+    \begin{column}{0.6\textwidth}
+      \begin{itemize}
+        \item \keyword{EAN-13} (European Article Number) consists of 13 digits.
+        \item Structure:
+        \begin{itemize}
+            \item Left Guard (101) 
+            \item 6 Left-side digits
+            \item Middle Guard (01010)
+            \item 6 Right-side digits
+            \item Right Guard (101)
+        \end{itemize}
+        \item \textbf{1 = Bar, 0 = Space}
+        \item \textbf{Unique Feature:} The first digit is \textit{implicit}, encoded in the parity pattern of the left-side digits.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \centering
+      \begin{center}
+         \includegraphics[width=\textwidth,height=0.5\textheight]{./images/ean-13-decoded.jpg}
+      \end{center}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{Project Goal}
-  \begin{block}{Objective}
-    Develop a robust method to detect and decode an EAN-13 barcode
-    directly from its bar pattern using classical image processing.
+\begin{frame}{Project Objective: Dual Approach}
+  \begin{block}{Goal}
+    To develop and compare two distinct methods for recognizing EAN-13 barcodes from images.
   \end{block}
-  \begin{itemize}
-    \item Input: grayscale or color image containing one barcode.
-    \item Output: the recognized 13-digit numeric sequence.
-    \item Must be invariant to lighting, rotation, distance, and perspective.
-  \end{itemize}
+
+  \begin{enumerate}
+    \item \keyword{Method A: Geometric Pipeline (Implemented)}
+    \begin{itemize}
+        \item Uses classical computer vision (Edge Detection, Contours).
+        \item Decodes the binary bar widths directly (Scanline Analysis).
+    \end{itemize}
+    
+    \item \keyword{Method B: OCR Pipeline (Future Work)}
+    \begin{itemize}
+        \item Detects the text numbers below the bars.
+        \item Uses Tesseract or Deep Learning OCR engines.
+    \end{itemize}
+  \end{enumerate}
+
+  \textbf{Why two methods?} To evaluate robustness speed vs. accuracy in challenging conditions (blur, curvature, lighting).
 \end{frame}
 
 % Section 2
-\section{Method Overview}
+\section{Method A: Geometric Pipeline}
 
-\begin{frame}{General Pipeline}
+\begin{frame}{Pipeline Overview}
+  The primary implemented method follows a strict classical processing chain:
+  
   \begin{enumerate}
-    \item Image preprocessing.
-    \item Edge detection.
-    \item Orientation estimation using Hough Transform.
-    \item Barcode localization via contours.
-    \item Perspective correction and flattening.
-    \item Bar pattern decoding (EAN-13 digit extraction).
+    \item \textbf{Preprocessing:} Grayscale conversion, CLAHE, Gaussian Blur.
+    \item \textbf{Edge Detection:} Sobel gradients to find vertical bar structures.
+    \item \textbf{Localization:} Hough Transform (Rotation) + Contour Analysis (Bounding Box).
+    \item \textbf{Extraction:} Perspective warping to obtain a flat, rectangular crop.
+    \item \keyword{Decoding Algorithm:} Converting pixels into numbers.
   \end{enumerate}
 \end{frame}
 
-\begin{frame}{1. Image Preprocessing}
+% Deep Dive into Decoding
+\section{Deep Dive: The Decoding Algorithm}
+
+\begin{frame}{Step 1: The Scanline \& Binarization}
+  How do we translate an image crop into data?
+  
   \begin{itemize}
-    \item Convert to grayscale and apply \textbf{CLAHE} to improve local contrast.
-    \item Apply smoothing to reduce random noise.
+    \item \keyword{Scanlines:} We extract a single row of pixels (intensity profile) from the center of the cropped barcode.
+    \item \keyword{Robustness:} If the center fails, we scan offsets ($\pm 10$ pixels) to avoid defects or glare.
+    \item \keyword{Adaptive Binarization:} The line is converted to 0s (Spaces) and 1s (Bars) based on local intensity thresholds.
+  \end{itemize}
+  
+  \[
+  \text{Pixel Stream: } [255, 255, 0, 0, 0, 255, 255, 0, 255] \rightarrow [0, 0, 1, 1, 1, 0, 0, 1, 0]
+  \]
+\end{frame}
+
+\begin{frame}{Step 2: Run-Length Encoding (RLE)}
+  We do not process individual pixels; we process \keyword{relative widths}.
+  
+  \begin{itemize}
+    \item We count consecutive pixels of the same color.
+    \item \textbf{Example:}
     \begin{itemize}
-      \item prepares the image for stable edge detection under uneven illumination.
+        \item \textit{Binary:} 0000 11 000 11111 00
+        \item \textit{RLE:} [4, 2, 3, 5, 2]
     \end{itemize}
+    \item This creates a sequence of "Widths" representing Bars and Spaces.
+    \item \textbf{Finding the Start:} We look for the Guard Pattern (1-1-1 ratio) to identify the beginning of the data.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{2. Edge Detection}
-  \begin{itemize}
-    \item Use \textbf{Sobel} filters to find vertical edges.
-    \item Threshold to keep only strong vertical transitions.
-    \item Perform morphological closing to join fragmented edges.
-    \begin{itemize}
-      \item barcode zones show dense, repetitive vertical gradients.
-    \end{itemize}
-  \end{itemize}
+\begin{frame}{Step 3: Normalization (The Core Logic)}
+  A digit in EAN-13 always consists of \textbf{4 elements} (Space-Bar-Space-Bar) and has a total width of \textbf{7 modules}.
+  
+  \begin{block}{The Normalization Formula}
+    To handle zoom and resolution differences, we normalize the raw RLE values ($P_i$) to the standard module width:
+    \[
+    M_i = \text{round}\left( \frac{P_i}{\sum_{j=1}^{4} P_j} \times 7 \right)
+    \]
+  \end{block}
+  
+  \begin{example}
+    Raw RLE for one digit: $[12px, 8px, 4px, 4px]$ (Sum = 28px). \\
+    Normalized: $\frac{12}{28}\times7 \approx 3$, $\frac{8}{28}\times7 \approx 2$, ... \\
+    \textbf{Result Pattern:} 3-2-1-1 $\rightarrow$ Lookup Table $\rightarrow$ Digit \textbf{0}.
+  \end{example}
 \end{frame}
 
-\begin{frame}{3. Orientation Estimation (Hough Transform)}
-  \begin{itemize}
-    \item Apply \textbf{Hough Line Transform} to detect dominant line angles.
-    \item Rotate the image to align the barcode horizontally.
-    \begin{itemize}
-      \item simplifies contour extraction and decoding.
-    \end{itemize}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{4. Barcode Region Extraction}
-  \begin{itemize}
-    \item Find connected regions using \textbf{cv::findContours}.
-    \item Filter candidates by aspect ratio (wide/short) and edge density.
-    \item Use \textbf{cv::minAreaRect} to compute bounding box.
-    \item Apply \textbf{warpPerspective} to correct skew or perspective distortion.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{5. Bar Pattern Decoding}
-  \begin{itemize}
-    \item Scan multiple horizontal lines across the barcode region.
-    \item Measure alternating black and white run lengths.
-    \item Normalize widths to the module size (smallest bar width).
-    \item Convert patterns to binary (0 = narrow, 1 = wide).
-    \item Split into left and right halves and decode using EAN-13 tables.
-    \item Validate with checksum:
-      \[
-      \text{Sum} = 3 \times \text{even digits} + \text{odd digits}
-      \]
-      \[
-      \text{Check digit} = (10 - (\text{Sum} \bmod 10)) \bmod 10
-      \]
-  \end{itemize}
+\begin{frame}{Step 4: Decoding and Parity}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \textbf{Left Side Encoding:}
+      \begin{itemize}
+          \item Digits 0-9 have two encodings: \keyword{L-code} (Odd parity) and \keyword{G-code} (Even parity).
+          \item The scanner detects which code was used (L or G).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{The 13th Digit (First Digit):}
+      \begin{itemize}
+          \item The first digit is \textit{not} printed as bars.
+          \item It is determined by the sequence of L and G codes found in the first 6 digits.
+          \item E.g., $LLGLGG \rightarrow 1$.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  
+  \vspace{0.5cm}
+  \textbf{Right Side:} Always uses R-codes.
 \end{frame}
 
 % Section 3
-\section{Improving Robustness}
+\section{Method B: OCR Pipeline (Future Work)}
 
-\begin{frame}{Handling Real-World Variations}
-  \begin{itemize}
-    \item \textbf{Lighting:} CLAHE and adaptive thresholding handle shadows/reflections.
-    \item \textbf{Rotation:} corrected using Hough-detected dominant angle.
-    \item \textbf{Distance:} scale invariance through adaptive module normalization.
-    \item \textbf{Perspective:} rectified using \textbf{minAreaRect} + \textbf{warpPerspective}.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Validation and Error Checking}
-  \begin{itemize}
-    \item Validate decoded digits with the EAN-13 checksum.
-    \item Compare results from multiple scanlines; choose the most consistent.
-    \item Reattempt decoding with adjusted thresholds if checksum fails.
-  \end{itemize}
+\begin{frame}{The OCR Approach}
+  Instead of analyzing bar widths, we analyze the human-readable text below the bars.
+  
+  \begin{block}{Pipeline Plan}
+    \begin{enumerate}
+        \item \textbf{Text Region Proposal:} Use morphological operations (dilation) to merge text characters into a solid block.
+        \item \textbf{Extraction:} Crop the bottom 20\% of the detected barcode area.
+        \item \textbf{Recognition:} Feed the crop into Tesseract LSTM or a CNN trained on digits (MNIST).
+    \end{enumerate}
+  \end{block}
 \end{frame}
 
 % Section 4
-\section{Results and Discussion}
+\section{Comparative Analysis Plan}
 
-\begin{frame}{Advantages \& Limitations}
-  \begin{block}{Advantages}
-    \begin{itemize}
-      \item Fully classical, no OCR or ML models required.
-      \item Robust to lighting, rotation, and perspective.
-      \item Real-time performance on standard hardware.
-    \end{itemize}
-  \end{block}
-  \begin{block}{Limitations}
-    \begin{itemize}
-      \item Sensitive to blur or low contrast.
-      \item Curved surfaces may distort bar widths.
-    \end{itemize}
-  \end{block}
-\end{frame}
-
-% Section 5
-\section{Conclusion}
-
-\begin{frame}{Conclusion}
-  \begin{itemize}
-    \item Edge, Hough, and contour analysis localize the barcode accurately.
-    \item Direct decoding of bar patterns retrieves the 13-digit code.
-    \item Meets robustness requirements with deterministic, interpretable steps.
-  \end{itemize}
-  \vspace{0.5cm}
-  \textbf{Future work:} improve decoding on curved or blurred barcodes.
-\end{frame}
-
-% Section 6
-\section{Bibliography}
-
-\begin{frame}{Bibliography and References}
-  \begin{itemize}
-    \item OpenCV Documentation - Edge Detection (Sobel, Scharr):  
-      \url{https://docs.opencv.org/4.x/d2/d2c/tutorial_sobel_derivatives.html}
-    \item OpenCV Hough Transform Reference:  
-      \url{https://docs.opencv.org/4.x/d3/de6/tutorial_js_houghlines.html}
-    \item OpenCV Contour Detection:  
-      \url{https://docs.opencv.org/4.x/d4/d73/tutorial_py_contours_begin.html}
-    \item ZXing-C++ (EAN-13 decoding logic reference):  
-      \url{https://github.com/zxing-cpp/zxing-cpp}
-    \item EAN-13 Barcode Specification (GS1):  
-      \url{https://www.gs1.org/standards/barcodes/ean-upc}
-  \end{itemize}
+\begin{frame}{Expected Comparison}
+  \begin{table}[]
+    \centering
+    \begin{tabular}{@{} l l l @{}}
+      \toprule
+      \textbf{Feature} & \textbf{Method A (Geometric)} & \textbf{Method B (OCR)} \\
+      \midrule
+      \textbf{Speed} & Extremely Fast ($<10$ms) & Slower (NN inference) \\
+      \textbf{Blur} & Fails if edges merge & Often robust (context) \\
+      \textbf{Lighting} & Needs contrast & Needs contrast \\
+      \textbf{Curvature} & Complex to de-warp & Robust (deformable models) \\
+      \textbf{Damage} & Redundancy helps & Fails if text is scratched \\
+      \bottomrule
+    \end{tabular}
+    \caption{Hypothetical performance matrix}
+  \end{table}
+  
+  The final project will perform benchmarks on a dataset of real-world images to validate these hypotheses.
 \end{frame}
 
 \end{document}

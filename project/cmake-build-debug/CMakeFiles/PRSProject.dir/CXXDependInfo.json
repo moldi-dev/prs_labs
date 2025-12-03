@@ -14,6 +14,8 @@
 	"forward-modules-from-target-dirs" : [],
 	"include-dirs" : 
 	[
+		"_deps/imgui-src",
+		"_deps/imgui-src/backends",
 		"/usr/include/opencv4"
 	],
 	"language" : "CXX",
@@ -21,6 +23,41 @@
 	"module-dir" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/CMakeFiles/PRSProject.dir",
 	"sources" : 
 	{
+		"CMakeFiles/PRSProject.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/imgui-src/backends/imgui_impl_glfw.cpp"
+		},
+		"CMakeFiles/PRSProject.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/imgui-src/backends/imgui_impl_opengl3.cpp"
+		},
+		"CMakeFiles/PRSProject.dir/_deps/imgui-src/imgui.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/imgui-src/imgui.cpp"
+		},
+		"CMakeFiles/PRSProject.dir/_deps/imgui-src/imgui_demo.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/imgui-src/imgui_demo.cpp"
+		},
+		"CMakeFiles/PRSProject.dir/_deps/imgui-src/imgui_draw.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/imgui-src/imgui_draw.cpp"
+		},
+		"CMakeFiles/PRSProject.dir/_deps/imgui-src/imgui_tables.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/imgui-src/imgui_tables.cpp"
+		},
+		"CMakeFiles/PRSProject.dir/_deps/imgui-src/imgui_widgets.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/moldi/Desktop/Facultate/Pattern_Recognition_Systems/project/cmake-build-debug/_deps/imgui-src/imgui_widgets.cpp"
+		},
 		"CMakeFiles/PRSProject.dir/main.cpp.o" : 
 		{
 			"language" : "CXX",
