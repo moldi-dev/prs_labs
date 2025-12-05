@@ -34,7 +34,7 @@ int main() {
     }
 
     // 2. Train Model
-    // Compute priors and likelihoods using ONLY training data [cite: 1028, 1032, 1034]
+    // Compute priors and likelihoods using ONLY training data
     Mat priors, likelihoods;
     cout << "[Step 2] Training the Naive Bayes Classifier..." << endl;
     train_naive_bayes(trainingData, priors, likelihoods);
@@ -55,7 +55,7 @@ int main() {
     int correct = 0;
     int total = testData.X.rows; // Use the size of the test set
 
-    for (int i = 0; i < total; ++i) {
+    for (int i = 0; i < total; i++) {
         // Get the test sample and its true label
         Mat sample = testData.X.row(i);
         int trueLabel = testData.y.at<int>(i);
