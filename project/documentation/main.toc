@@ -1,5 +1,5 @@
 \beamer@sectionintoc {1}{Introduction}{3}{0}{1}
-\beamer@sectionintoc {2}{Method A: Geometric Pipeline}{5}{0}{2}
-\beamer@sectionintoc {3}{Deep Dive: The Decoding Algorithm}{6}{0}{3}
-\beamer@sectionintoc {4}{Method B: OCR Pipeline (Future Work)}{10}{0}{4}
-\beamer@sectionintoc {5}{Comparative Analysis Plan}{11}{0}{5}
+\beamer@sectionintoc {2}{Dataset Preparation}{5}{0}{2}
+\beamer@sectionintoc {3}{Preprocessing Pipeline}{6}{0}{3}
+\beamer@sectionintoc {4}{Region Detection and Recognition}{9}{0}{4}
+\beamer@sectionintoc {5}{Results}{11}{0}{5}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.11.23)  3 DEC 2025 19:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2025.12.5)  1 JAN 2026 18:09
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -537,7 +537,7 @@ Package: amsthm 2020/05/29 v2.20.6
 ) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerbasethemes.sty)) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerthemedefault.sty (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerfontthemedefault.sty) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamercolorthemedefault.sty) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerinnerthemedefault.sty
 \beamer@dima=\dimen292
 \beamer@dimb=\dimen293
-) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerouterthemedefault.sty))) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerthemeMadrid.sty (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamercolorthemewhale.sty) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamercolorthemeorchid.sty) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerinnerthemerounded.sty) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerouterthemeinfolines.sty)) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamercolorthemeseahorse.sty) (/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
+) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerouterthemedefault.sty))) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerthemeMadrid.sty (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamercolorthemewhale.sty) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamercolorthemeorchid.sty) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerinnerthemerounded.sty) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamerouterthemeinfolines.sty)) (/usr/share/texlive/texmf-dist/tex/latex/beamer/beamercolorthemebeaver.sty) (/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \heavyrulewidth=\dimen294
 \lightrulewidth=\dimen295
@@ -556,10 +556,61 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \@thisruleclass=\count336
 \@lastruleclass=\count337
 \@thisrulewidth=\dimen306
-) (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+) (/usr/share/texlive/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty (/usr/share/texlive/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+Package: pgf 2023-01-15 v3.1.10 (3.1.10)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.code.tex
+File: pgfmoduleshapes.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfnodeparttextbox=\box76
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.tex
+File: pgfmoduleplot.code.tex 2023-01-15 v3.1.10 (3.1.10)
+) (/usr/share/texlive/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty
+Package: pgfcomp-version-0-65 2023-01-15 v3.1.10 (3.1.10)
+\pgf@nodesepstart=\dimen307
+\pgf@nodesepend=\dimen308
+) (/usr/share/texlive/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty
+Package: pgfcomp-version-1-18 2023-01-15 v3.1.10 (3.1.10)
+)) (/usr/share/texlive/texmf-dist/tex/latex/pgf/utilities/pgffor.sty (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2023-01-15 v3.1.10 (3.1.10)
+\pgffor@iter=\dimen309
+\pgffor@skip=\dimen310
+\pgffor@stack=\toks45
+\pgffor@toks=\toks46
+)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
+Package: tikz 2023-01-15 v3.1.10 (3.1.10)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex
+File: pgflibraryplothandlers.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@plot@mark@count=\count338
+\pgfplotmarksize=\dimen311
+)
+\tikz@lastx=\dimen312
+\tikz@lasty=\dimen313
+\tikz@lastxsaved=\dimen314
+\tikz@lastysaved=\dimen315
+\tikz@lastmovetox=\dimen316
+\tikz@lastmovetoy=\dimen317
+\tikzleveldistance=\dimen318
+\tikzsiblingdistance=\dimen319
+\tikz@figbox=\box77
+\tikz@figbox@bg=\box78
+\tikz@tempbox=\box79
+\tikz@tempbox@bg=\box80
+\tikztreelevel=\count339
+\tikznumberofchildren=\count340
+\tikznumberofcurrentchild=\count341
+\tikz@fig@count=\count342
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.code.tex
+File: pgfmodulematrix.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfmatrixcurrentrow=\count343
+\pgfmatrixcurrentcolumn=\count344
+\pgf@matrix@numberofcolumns=\count345
+)
+\tikz@expandcount=\count346
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2023-01-15 v3.1.10 (3.1.10)
+))) (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count338
-\l__pdf_internal_box=\box76
+\l__color_backend_stack_int=\count347
+\l__pdf_internal_box=\box81
 ) (./main.aux)
 \openout1 = `main.aux'.
 
@@ -618,17 +669,17 @@ LaTeX Font Info:    ... okay on input line 19.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count339
-\scratchdimen=\dimen307
-\scratchbox=\box77
-\nofMPsegments=\count340
-\nofMParguments=\count341
-\everyMPshowfont=\toks45
-\MPscratchCnt=\count342
-\MPscratchDim=\dimen308
-\MPnumerator=\count343
-\makeMPintoPDFobject=\count344
-\everyMPtoPDFconversion=\toks46
+\scratchcounter=\count348
+\scratchdimen=\dimen320
+\scratchbox=\box82
+\nofMPsegments=\count349
+\nofMParguments=\count350
+\everyMPshowfont=\toks47
+\MPscratchCnt=\count351
+\MPscratchDim=\dimen321
+\MPnumerator=\count352
+\makeMPintoPDFobject=\count353
+\everyMPtoPDFconversion=\toks48
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
@@ -706,42 +757,88 @@ Dictionary: translator-theorem-dictionary, Language: English
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./main.toc) [2
 
 ]
-LaTeX Font Info:    Trying to load font information for U+msa on input line 58.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 56.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 58.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 56.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 58.
+LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 56.
  (/usr/share/texlive/texmf-dist/tex/latex/sansmathaccent/ot1mathkerncmss.fd
 File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/mathkerncmss.
 )
-<./images/ean-13-decoded.jpg, id=118, 665.48625pt x 465.74pt>
-File: ./images/ean-13-decoded.jpg Graphic file (type jpg)
-<use ./images/ean-13-decoded.jpg>
-Package pdftex.def Info: ./images/ean-13-decoded.jpg  used on input line 58.
-(pdftex.def)             Requested size: 136.91298pt x 130.23575pt.
+<./images/ean-13-example.png, id=119, 803.0pt x 449.68pt>
+File: ./images/ean-13-example.png Graphic file (type png)
+<use ./images/ean-13-example.png>
+Package pdftex.def Info: ./images/ean-13-example.png  used on input line 56.
+(pdftex.def)             Requested size: 136.91254pt x 104.18585pt.
  [3
 
- <./images/ean-13-decoded.jpg>] [4
+ <./images/ean-13-example.png (PNG copy)>] [4
 
 ] [5
 
 ] [6
 
-] [7
+]
+<./images/clahe-example.png, id=241, 801.99625pt x 536.0025pt>
+File: ./images/clahe-example.png Graphic file (type png)
+<use ./images/clahe-example.png>
+Package pdftex.def Info: ./images/clahe-example.png  used on input line 126.
+(pdftex.def)             Requested size: 136.91603pt x 91.50362pt.
+ [7
 
-] [8
+ <./images/clahe-example.png>] [8
 
 ] [9
 
 ] [10
 
-] [11
-
 ]
+<./images/results/1/1.png, id=366, 1958.31625pt x 952.55875pt>
+File: ./images/results/1/1.png Graphic file (type png)
+<use ./images/results/1/1.png>
+Package pdftex.def Info: ./images/results/1/1.png  used on input line 209.
+(pdftex.def)             Requested size: 273.83371pt x 105.49399pt.
+<./images/results/1/2.png, id=367, 1958.31625pt x 952.55875pt>
+File: ./images/results/1/2.png Graphic file (type png)
+<use ./images/results/1/2.png>
+Package pdftex.def Info: ./images/results/1/2.png  used on input line 209.
+(pdftex.def)             Requested size: 273.83371pt x 105.49399pt.
+ [11
+
+ <./images/results/1/1.png> <./images/results/1/2.png>]
+<./images/results/1/3.png, id=397, 1958.31625pt x 952.55875pt>
+File: ./images/results/1/3.png Graphic file (type png)
+<use ./images/results/1/3.png>
+Package pdftex.def Info: ./images/results/1/3.png  used on input line 214.
+(pdftex.def)             Requested size: 342.29214pt x 210.98799pt.
+ [12
+
+ <./images/results/1/3.png>]
+<./images/results/2/1.png, id=425, 1958.31625pt x 952.55875pt>
+File: ./images/results/2/1.png Graphic file (type png)
+<use ./images/results/2/1.png>
+Package pdftex.def Info: ./images/results/2/1.png  used on input line 220.
+(pdftex.def)             Requested size: 273.83371pt x 105.49399pt.
+<./images/results/2/2.png, id=426, 1958.31625pt x 952.55875pt>
+File: ./images/results/2/2.png Graphic file (type png)
+<use ./images/results/2/2.png>
+Package pdftex.def Info: ./images/results/2/2.png  used on input line 220.
+(pdftex.def)             Requested size: 273.83371pt x 105.49399pt.
+ [13
+
+ <./images/results/2/1.png> <./images/results/2/2.png>]
+<./images/results/2/3.png, id=455, 1958.31625pt x 952.55875pt>
+File: ./images/results/2/3.png Graphic file (type png)
+<use ./images/results/2/3.png>
+Package pdftex.def Info: ./images/results/2/3.png  used on input line 225.
+(pdftex.def)             Requested size: 342.29214pt x 210.98799pt.
+ [14
+
+ <./images/results/2/3.png>]
 \tf@nav=\write6
 \openout6 = `main.nav'.
 
@@ -753,21 +850,21 @@ Package pdftex.def Info: ./images/ean-13-decoded.jpg  used on input line 58.
 
  (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 4FFA98E3928E883AF7A0519443B72975;933.
+(rerunfilecheck)             Checksum: 28DEAC344777EFD1CE8433EF8905671B;690.
  ) 
 Here is how much of TeX's memory you used:
- 22194 strings out of 476041
- 438479 string characters out of 5793173
+ 25255 strings out of 476041
+ 510294 string characters out of 5793174
  1864388 words of memory out of 6000000
- 42151 multiletter control sequences out of 15000+600000
- 520655 words of font info for 61 fonts, out of 8000000 for 9000
+ 45156 multiletter control sequences out of 15000+600000
+ 524744 words of font info for 76 fonts, out of 8000000 for 9000
  1137 hyphenation exceptions out of 8191
  128i,15n,122p,459b,875s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on main.pdf (11 pages, 262542 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on main.pdf (14 pages, 5388991 bytes).
 PDF statistics:
- 462 PDF objects out of 1000 (max. 8388607)
- 382 compressed objects within 4 object streams
- 28 named destinations out of 1000 (max. 500000)
- 304 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 537 PDF objects out of 1000 (max. 8388607)
+ 450 compressed objects within 5 object streams
+ 34 named destinations out of 1000 (max. 500000)
+ 261 words of extra memory for PDF output out of 10000 (max. 10000000)
 

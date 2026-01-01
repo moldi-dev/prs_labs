@@ -116,15 +116,39 @@ class AppModel:
         if best_rect is None:
             return None, None
 
-        box = cv2.boxPoints(best_rect)
+        (center, (w, h), angle) = best_rect
+
+        # We want to add padding along the length of the barcode
+        # Check which dimension is the "length" (barcodes are longer than they are tall)
+        padding_factor = 1.2 # Make the crop 20% wider (to catch the first digit before the left guard which sometimes is left out)
+
+        if w > h:
+            new_w = w * padding_factor
+            new_h = h
+        else:
+            new_w = w
+            new_h = h * padding_factor
+
+        # Recalculate the box points with the new expanded size
+        expanded_rect = (center, (new_w, new_h), angle)
+        box = cv2.boxPoints(expanded_rect)
+
         box = np.int32(box)
-        width = int(best_rect[1][0])
-        height = int(best_rect[1][1])
+
+        width = int(new_w)
+        height = int(new_h)
+
         src_pts = box.astype("float32")
+
+        # Perpspective transform
         dst_pts = np.array([[0, height - 1], [0, 0], [width - 1, 0], [width - 1, height - 1]], dtype="float32")
+
         M = cv2.getPerspectiveTransform(src_pts, dst_pts)
+
+        # Use the expanded dimensions for the warp size
         warped = cv2.warpPerspective(self.original_image, M, (width, height))
 
+        # Rotate if vertical (ensure it's horizontal for reading)
         if height > width:
             warped = cv2.rotate(warped, cv2.ROTATE_90_CLOCKWISE)
 

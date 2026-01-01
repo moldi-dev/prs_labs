@@ -103,8 +103,8 @@ def segment_digits(barcode_crop):
     for c in contours:
         x, y, cw, ch = cv2.boundingRect(c)
 
-        # Height check: digits should be reasonably tall (> 40% of strip height)
-        if ch < 0.4 * bottom_strip.shape[0]:
+        # Height check: digits should be reasonably tall (>20% of strip height)
+        if ch < 0.2 * bottom_strip.shape[0]:
             continue
 
         # Aspect ratio check: digits are usually blocky and guard bars (||) are very thin

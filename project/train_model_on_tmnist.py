@@ -7,7 +7,7 @@ CSV_FILE = "TMNIST_digits.csv"
 MODEL_PATH = "ean13_digit_model.keras"
 IMG_SIZE = (28, 28)
 BATCH_SIZE = 64
-EPOCHS = 30
+EPOCHS = 20
 
 
 def load_data():

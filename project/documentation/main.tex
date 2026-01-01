@@ -1,17 +1,17 @@
 \documentclass{beamer}
 
 \usetheme{Madrid}
-\usecolortheme{seahorse}
+\usecolortheme{beaver}
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{booktabs}
+\usepackage{tikz}
 
-% Custom command for emphasizing key terms
 \newcommand{\keyword}[1]{\textbf{\color{blue}#1}}
 
-\title[EAN-13 Detection \& Decoding]{EAN-13 Barcode Recognition: \\ A Comparative Approach}
-\subtitle{Geometric Decoding vs. Optical Character Recognition (OCR)}
+\title[EAN-13 OCR Recognition]{EAN-13 Barcode Recognition \\ An OCR-Based Approach}
+\subtitle{Pattern Recognition Systems}
 \author{Moldovan Darius-Andrei}
 \institute[TUC-N]{Technical University of Cluj-Napoca}
 \date{\today}
@@ -45,163 +45,183 @@
             \item Right Guard (101)
         \end{itemize}
         \item \textbf{1 = Bar, 0 = Space}
-        \item \textbf{Unique Feature:} The first digit is \textit{implicit}, encoded in the parity pattern of the left-side digits.
+        \item \textbf{Key Challenge:} While bars encode data geometrically, the human-readable text below provides a robust fallback for recognition.
       \end{itemize}
     \end{column}
     \begin{column}{0.4\textwidth}
       \centering
-      \begin{center}
-         \includegraphics[width=\textwidth,height=0.5\textheight]{./images/ean-13-decoded.jpg}
-      \end{center}
+       \includegraphics[width=\textwidth,height=0.4\textheight]{./images/ean-13-example.png} 
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{Project Objective: Dual Approach}
+\begin{frame}{Project Objective}
   \begin{block}{Goal}
-    To develop and compare two distinct methods for recognizing EAN-13 barcodes from images.
+    To develop a robust recognition system that identifies EAN-13 barcodes by reading the digits directly using a Convolutional Neural Network (CNN).
   \end{block}
 
-  \begin{enumerate}
-    \item \keyword{Method A: Geometric Pipeline (Implemented)}
-    \begin{itemize}
-        \item Uses classical computer vision (Edge Detection, Contours).
-        \item Decodes the binary bar widths directly (Scanline Analysis).
-    \end{itemize}
-    
-    \item \keyword{Method B: OCR Pipeline (Future Work)}
-    \begin{itemize}
-        \item Detects the text numbers below the bars.
-        \item Uses Tesseract or Deep Learning OCR engines.
-    \end{itemize}
-  \end{enumerate}
-
-  \textbf{Why two methods?} To evaluate robustness speed vs. accuracy in challenging conditions (blur, curvature, lighting).
+  \begin{itemize}
+    \item \keyword{Robustness:} Overcomes issues where scratch marks, printing defects and various lighting conditions may break the vertical bars but leave text readable.
+    \item \keyword{Adaptability:} Uses a model trained on diverse fonts to handle real-world variations (Ink bleed, blur).
+  \end{itemize}
 \end{frame}
 
 % Section 2
-\section{Method A: Geometric Pipeline}
+\section{Dataset Preparation}
 
-\begin{frame}{Pipeline Overview}
-  The primary implemented method follows a strict classical processing chain:
-  
-  \begin{enumerate}
-    \item \textbf{Preprocessing:} Grayscale conversion, CLAHE, Gaussian Blur.
-    \item \textbf{Edge Detection:} Sobel gradients to find vertical bar structures.
-    \item \textbf{Localization:} Hough Transform (Rotation) + Contour Analysis (Bounding Box).
-    \item \textbf{Extraction:} Perspective warping to obtain a flat, rectangular crop.
-    \item \keyword{Decoding Algorithm:} Converting pixels into numbers.
-  \end{enumerate}
-\end{frame}
+\begin{frame}{Training Data: TMNIST}
+  To ensure the model generalizes well to printed text, we utilize the \keyword{TMNIST (Typeface MNIST)} dataset rather than handwritten digits.
 
-% Deep Dive into Decoding
-\section{Deep Dive: The Decoding Algorithm}
-
-\begin{frame}{Step 1: The Scanline \& Binarization}
-  How do we translate an image crop into data?
-  
   \begin{itemize}
-    \item \keyword{Scanlines:} We extract a single row of pixels (intensity profile) from the center of the cropped barcode.
-    \item \keyword{Robustness:} If the center fails, we scan offsets ($\pm 10$ pixels) to avoid defects or glare.
-    \item \keyword{Adaptive Binarization:} The line is converted to 0s (Spaces) and 1s (Bars) based on local intensity thresholds.
-  \end{itemize}
-  
-  \[
-  \text{Pixel Stream: } [255, 255, 0, 0, 0, 255, 255, 0, 255] \rightarrow [0, 0, 1, 1, 1, 0, 0, 1, 0]
-  \]
-\end{frame}
-
-\begin{frame}{Step 2: Run-Length Encoding (RLE)}
-  We do not process individual pixels; we process \keyword{relative widths}.
-  
-  \begin{itemize}
-    \item We count consecutive pixels of the same color.
-    \item \textbf{Example:}
+    \item \textbf{Source:} The dataset contains glyphs from over 2,900 different typography fonts.
+    \item \textbf{Filtering Process:}
     \begin{itemize}
-        \item \textit{Binary:} 0000 11 000 11111 00
-        \item \textit{RLE:} [4, 2, 3, 5, 2]
+        \item The original dataset contains 94 characters (letters + symbols).
+        \item We extracted and used \textit{only} the digits \textbf{0-9}.
     \end{itemize}
-    \item This creates a sequence of "Widths" representing Bars and Spaces.
-    \item \textbf{Finding the Start:} We look for the Guard Pattern (1-1-1 ratio) to identify the beginning of the data.
+    \item \textbf{Why TMNIST?} 
+    \begin{itemize}
+        \item Barcodes use standardized fonts (like OCR-B).
+        \item Handwritten digits (MNIST) lack the sharp edges and specific geometry of printed barcodes.
+        \item TMNIST provides variation in character boldness (simulating ink bleed).
+    \end{itemize}
   \end{itemize}
-\end{frame}
-
-\begin{frame}{Step 3: Normalization (The Core Logic)}
-  A digit in EAN-13 always consists of \textbf{4 elements} (Space-Bar-Space-Bar) and has a total width of \textbf{7 modules}.
-  
-  \begin{block}{The Normalization Formula}
-    To handle zoom and resolution differences, we normalize the raw RLE values ($P_i$) to the standard module width:
-    \[
-    M_i = \text{round}\left( \frac{P_i}{\sum_{j=1}^{4} P_j} \times 7 \right)
-    \]
-  \end{block}
-  
-  \begin{example}
-    Raw RLE for one digit: $[12px, 8px, 4px, 4px]$ (Sum = 28px). \\
-    Normalized: $\frac{12}{28}\times7 \approx 3$, $\frac{8}{28}\times7 \approx 2$, ... \\
-    \textbf{Result Pattern:} 3-2-1-1 $\rightarrow$ Lookup Table $\rightarrow$ Digit \textbf{0}.
-  \end{example}
-\end{frame}
-
-\begin{frame}{Step 4: Decoding and Parity}
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      \textbf{Left Side Encoding:}
-      \begin{itemize}
-          \item Digits 0-9 have two encodings: \keyword{L-code} (Odd parity) and \keyword{G-code} (Even parity).
-          \item The scanner detects which code was used (L or G).
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \textbf{The 13th Digit (First Digit):}
-      \begin{itemize}
-          \item The first digit is \textit{not} printed as bars.
-          \item It is determined by the sequence of L and G codes found in the first 6 digits.
-          \item E.g., $LLGLGG \rightarrow 1$.
-      \end{itemize}
-    \end{column}
-  \end{columns}
-  
-  \vspace{0.5cm}
-  \textbf{Right Side:} Always uses R-codes.
 \end{frame}
 
 % Section 3
-\section{Method B: OCR Pipeline (Future Work)}
+\section{Preprocessing Pipeline}
 
-\begin{frame}{The OCR Approach}
-  Instead of analyzing bar widths, we analyze the human-readable text below the bars.
+\begin{frame}{Pipeline Overview}
+  The image processing pipeline is critical for isolating the barcode region before OCR can begin.
   
-  \begin{block}{Pipeline Plan}
-    \begin{enumerate}
-        \item \textbf{Text Region Proposal:} Use morphological operations (dilation) to merge text characters into a solid block.
-        \item \textbf{Extraction:} Crop the bottom 20\% of the detected barcode area.
-        \item \textbf{Recognition:} Feed the crop into Tesseract LSTM or a CNN trained on digits (MNIST).
-    \end{enumerate}
-  \end{block}
+  \begin{enumerate}
+    \item \textbf{Grayscale Conversion:} Reduces computational complexity ($3 \rightarrow 1$ channel).
+    \item \textbf{CLAHE:} Adaptive contrast enhancement.
+    \item \textbf{Gaussian Blur:} Noise reduction.
+    \item \textbf{Edge Detection (Sobel):} Finding vertical structures.
+    \item \textbf{Morphology \& Thresholding:} Fusing bars into regions.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Preprocessing Deep Dive: CLAHE}
+  \framesubtitle{Contrast Limited Adaptive Histogram Equalization}
+  
+  Standard histogram equalization stretches contrast globally, which amplifies noise in flat regions. We use \keyword{CLAHE} to handle uneven lighting (e.g., glare on glossy packaging).
+
+  \begin{columns}
+    \begin{column}{0.6\textwidth}
+      \textbf{How it works:}
+      \begin{enumerate}
+          \item \textbf{Tiling:} The image is divided into a grid ($8 \times 8$ tiles).
+          \item \textbf{Equalization:} Histogram equalization is applied \textit{locally} to each tile.
+          \item \textbf{Contrast Limiting:} To prevent amplifying noise, histogram bins above a threshold are clipped and redistributed.
+          \item \textbf{Interpolation:} Boundaries between tiles are smoothed using bilinear interpolation to remove artifacts.
+      \end{enumerate}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{./images/clahe-example.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Preprocessing Deep Dive: Sobel Operators}
+  \framesubtitle{Why Sobel?}
+  
+  Barcodes are defined by strong \textbf{vertical gradients}. We use the Sobel operator to detect these specific intensity changes.
+  
+  \begin{itemize}
+      \item The operator uses two $3 \times 3$ convolution kernels:
+  \end{itemize}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \[
+      G_x = \begin{bmatrix} 
+      -1 & 0 & +1 \\
+      -2 & 0 & +2 \\
+      -1 & 0 & +1 
+      \end{bmatrix}
+      \]
+      \centering \textit{Detects Vertical Edges}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \[
+      G_y = \begin{bmatrix} 
+      -1 & -2 & -1 \\
+      0 & 0 & 0 \\
+      +1 & +2 & +1 
+      \end{bmatrix}
+      \]
+      \centering \textit{Detects Horizontal Edges}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.5cm}
+  \textbf{Fusion Strategy:}
+  We compute the weighted blend to prioritize vertical structures while retaining rotation robustness:
+  \[
+  G = 0.5 \cdot |G_x| + 0.5 \cdot |G_y|
+  \]
 \end{frame}
 
 % Section 4
-\section{Comparative Analysis Plan}
+\section{Region Detection and Recognition}
 
-\begin{frame}{Expected Comparison}
-  \begin{table}[]
-    \centering
-    \begin{tabular}{@{} l l l @{}}
-      \toprule
-      \textbf{Feature} & \textbf{Method A (Geometric)} & \textbf{Method B (OCR)} \\
-      \midrule
-      \textbf{Speed} & Extremely Fast ($<10$ms) & Slower (NN inference) \\
-      \textbf{Blur} & Fails if edges merge & Often robust (context) \\
-      \textbf{Lighting} & Needs contrast & Needs contrast \\
-      \textbf{Curvature} & Complex to de-warp & Robust (deformable models) \\
-      \textbf{Damage} & Redundancy helps & Fails if text is scratched \\
-      \bottomrule
-    \end{tabular}
-    \caption{Hypothetical performance matrix}
-  \end{table}
+\begin{frame}{Morphology and Localization}
+  After detecting edges, we must group them into a coherent "Barcode Object".
+
+  \begin{enumerate}
+      \item \keyword{Otsu's Binarization:} Automatically finds the optimal threshold to separate high-gradient edges from the background.
+      \item \keyword{Morphological Closing:} 
+      \begin{itemize}
+          \item We apply a \textbf{rectangular kernel} ($21 \times 11$).
+          \item \textit{Closing = Dilation followed by Erosion.}
+          \item \textbf{Purpose:} This specific kernel shape bridges the horizontal gaps between vertical bars, fusing the individual lines into a single solid rectangular block.
+      \end{itemize}
+      \item \keyword{Erosion \& Dilation:} A secondary pass with a smaller ($3 \times 3$) kernel removes small noise specks (Erosion) and restores the block boundary (Dilation).
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{The Neural Network}
+  Once the barcode is cropped and the bottom text strip is segmented, the digits are passed to a neural network.
   
-  The final project will perform benchmarks on a dataset of real-world images to validate these hypotheses.
+  \begin{block}{Architecture Highlights}
+    \begin{itemize}
+        \item \textbf{Input:} $28 \times 28$ Grayscale image.
+        \item \textbf{Conv Layers:} Extract geometric features (loops, lines, corners).
+        \item \textbf{Pooling:} Reduces dimensionality and makes the model invariant to small shifts.
+        \item \textbf{Dropout:} Prevents overfitting to specific fonts.
+        \item \textbf{Output:} Softmax probability over 10 classes (0-9).
+    \end{itemize}
+  \end{block}
+  
+  This replaces traditional template matching, allowing the system to read digits even if they are slightly blurred or deformed by perspective.
+\end{frame}
+
+% Section 5
+\section{Results}
+
+\begin{frame}[c]{Results (1/4)}
+  \centering
+  \includegraphics[width=0.8\textwidth, height=0.405\textheight]{./images/results/1/1.png}
+  \includegraphics[width=0.8\textwidth, height=0.405\textheight]{./images/results/1/2.png}
+\end{frame}
+
+\begin{frame}[c]{Results (2/4)}
+  \centering
+  \includegraphics[width=\textwidth, height=0.81\textheight]{./images/results/1/3.png}
+\end{frame}
+
+\begin{frame}[c]{Results (3/4)}
+  \centering
+  \includegraphics[width=0.8\textwidth, height=0.405\textheight]{./images/results/2/1.png}
+  \includegraphics[width=0.8\textwidth, height=0.405\textheight]{./images/results/2/2.png}
+\end{frame}
+
+\begin{frame}[c]{Results (4/4)}
+  \centering
+  \includegraphics[width=\textwidth, height=0.81\textheight]{./images/results/2/3.png}
 \end{frame}
 
 \end{document}
